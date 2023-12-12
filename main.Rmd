@@ -1,0 +1,43 @@
+---
+title: "UCSAS 2024"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+source("./scripts/data.getter.R")
+source("./scripts/data.prepper.R")
+source("./scripts/data.picker.R")
+
+source("./scripts/model.fitter.R")
+source("./scripts/model.predictor.R")
+```
+
+```{r}
+# clean and processed DF
+df <- prepare_data(get_data())
+top_countries <- read_csv("./raw_data/top_countries.csv",
+                          show_col_types = FALSE)
+
+# get a model for each (apparatus, gender) pair
+lm_models <- fit_lm_model(df)
+
+# using whole data frame, get predictions of every athlete
+predictions <- predict_scores(df, lm_models)
+
+# the 60 men and women chosen through criteria 1 and 2
+women <- process_team_competitors(predictions, top_countries, "w")
+men <- process_team_competitors(predictions, top_countries, "m")
+```
+
+```{r}
+colnames(df)
+```

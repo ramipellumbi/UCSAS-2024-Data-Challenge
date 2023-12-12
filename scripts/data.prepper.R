@@ -1,3 +1,4 @@
+library(purrr)
 library(dplyr)
 library(snakecase)
 library(stringr)
@@ -5,22 +6,8 @@ library(stringi)
 
 prepare_data <- function(data_frame) {
   colnames(data_frame) <- to_snake_case(colnames(data_frame))
-  column_names <- colnames(data_frame)
-
-  columns_exist_prepper <- "first_name" %in% column_names &
-    "last_name" %in% column_names &
-    "apparatus" %in% column_names &
-    "gender" %in% column_names &
-    "competition" %in% column_names &
-    "round" %in% column_names &
-    "date" %in% column_names &
-    "score" %in% column_names &
-    "d_score" %in% column_names &
-    "e_score" %in% column_names &
-    "penalty" %in% column_names
-
-  stopifnot(columns_exist_prepper)
-
+  
+  # clean column names, some countries, and some names
   prepared_data <- data_frame %>%
     mutate(name = tolower(paste(first_name, last_name, sep = " ")),
            apparatus = str_replace_all(.data$apparatus, "_", ""),
@@ -33,10 +20,57 @@ prepare_data <- function(data_frame) {
     mutate(name = ifelse(name == "frederick richard", "frederick nathaniel richard", name)) %>%
     mutate(name = ifelse(name == "ian skirkey", "ian hunter skirkey", name)) %>%
     mutate(country = ifelse(country %in% c("ENG", "SCO"), "GBR", country)) %>%
-    mutate(country = ifelse(country %in% c("GE1", "GE2"), "GER", country))
-    
+    mutate(country = ifelse(country %in% c("GE1", "GE2"), "GER", country)) %>%
+    dplyr::select(name, gender, country, date, apparatus, d_score, e_score, penalty, score)
+  
+  # get a start and end date of each competition
+  cleaned_data <- clean_dates(prepared_data)
+  
+  # for each athlete, get their first start date
+  df_first_date <- cleaned_data %>%
+    group_by(name, apparatus) %>%
+    summarise(first_date = min(start_date), .groups = "keep")
+  
+  # left join the first date to the original data
+  cleaned_data <- cleaned_data %>%
+    left_join(df_first_date, by = c("name", "apparatus"))
+  
+  # get summary of performance
+  df_summary <- cleaned_data %>%
+    arrange(name, apparatus, start_date) %>%
+    group_by(name, apparatus) %>%
+    mutate(is_first_date = start_date == first_date,
+           cumulative_score = cumsum(score),
+           count = row_number()) %>%
+    ungroup() %>%
+    mutate(cumulative_score = ifelse(is_first_date, 0, cumulative_score),
+           count = ifelse(is_first_date, 1, count))
+  
+  # return dataframe computes average up to date for each athlete
+  df_final <- cleaned_data %>%
+    group_by(name, apparatus) %>%
+    mutate(avg_score_up_to = map_dbl(start_date, ~ {
+      current_date <- .x
+      subset_df <- df_summary %>%
+        filter(name == name & apparatus == apparatus & start_date < current_date)
+      if (nrow(subset_df) == 0) {
+        NA_real_
+      } else {
+        last(subset_df$cumulative_score) / last(subset_df$count)
+      }
+    })) %>%
+    ungroup() %>%
+    mutate(avg_score_up_to = ifelse(avg_score_up_to == 0, NA, avg_score_up_to)) %>%
+    arrange(name, start_date, apparatus)
+  
+  # get global average on score and d_score for each gender, apparatus, name
+  df_final <- df_final %>% 
+    group_by(gender, apparatus, name) %>%
+    mutate(all_avg_score = mean(score, na.rm = TRUE),
+           all_avg_d_score = mean(d_score, na.rm = TRUE)) %>%
+    ungroup()
 
-  return(clean_dates(prepared_data))
+  return(df_final)
 }
 
 # Convert categorical variables to factors
@@ -96,7 +130,13 @@ clean_dates <- function(data) {
 
   # Replace the columns in the original data
   data$start_date <- sapply(start_date, paste, collapse = " ")
+  data$start_date <- gsub("Sept", "Sep", data$start_date)
   data$end_date <- sapply(end_date, paste, collapse = " ")
+  data$end_date <- gsub("Sept", "Sep", data$end_date)
+  
+  # Dates in Date form 
+  data$start_date <- as.Date(data$start_date, format = "%Y-%b-%d")
+  data$end_date <- as.Date(data$end_date, format = "%Y-%b-%d")
 
   return(data)
 }

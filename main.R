@@ -1,7 +1,5 @@
 library(tidyverse)
 
-setwd("/Users/zihanwang/Documents/GitHub/case-studies/1-Gymnastics")
-
 source("./scripts/data.getter.R")
 source("./scripts/data.picker.R")
 source("./scripts/data.prepper.R")

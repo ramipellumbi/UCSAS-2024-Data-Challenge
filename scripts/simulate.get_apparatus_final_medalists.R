@@ -4,18 +4,16 @@ source("./scripts/model.predictor.R")
 # summed scores of all events
 get_apparatus_final_medalists <- function(simulation_data,
                                           apparatus_final_qualifiers,
-                                          lm_models)
-{
+                                          lm_models) {
   result_list <- list()
-  
-  for (gender_t in c("m", "w"))
-  {
+
+  for (gender_t in c("m", "w")) {
     names <- apparatus_final_qualifiers$name
-    
+
     filtered_data <- simulation_data %>%
       filter(name %in% names,
              gender == gender_t)
-    
+
     predictions <- predict_scores(filtered_data, lm_models)
     medalists <- predictions %>%
       group_by(apparatus) %>%
@@ -27,10 +25,10 @@ get_apparatus_final_medalists <- function(simulation_data,
                rank == 3 ~ "Bronze",
                TRUE ~ "NA"
              ))
-    
+
     result_list[[gender_t]] <- medalists
   }
-  
+
   combined_result <- bind_rows(result_list, .id = "gender") %>%
     dplyr::select(name,
                   gender,
@@ -39,7 +37,5 @@ get_apparatus_final_medalists <- function(simulation_data,
                   medal,
                   predicted_score)
 
-  
-  
   return(combined_result)
 }

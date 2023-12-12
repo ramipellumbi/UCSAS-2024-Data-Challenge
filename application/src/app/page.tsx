@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Typography,
@@ -58,7 +58,7 @@ export default function AssignTeams() {
   );
 
   const [assignments, setAssignments] = useState<
-    Record<string, Record<string, string[]>> | undefined
+    Record<string, Record<string, string[]>>
   >(() => {
     const item = window.localStorage.getItem(CACHE_KEYS.assignments);
     if (item) {
@@ -85,6 +85,33 @@ export default function AssignTeams() {
 
   const apparatuses = APPARATUSES[gender];
   const names = COMPETITORS[gender];
+
+  //   useEffect(() => {
+  //     if (selectedTeam[gender].length < 5) return;
+
+  //     // remove all selections from the apparatus that are not in the selected team
+  //     const updatedSelections = apparatuses.reduce((acc, apparatus) => {
+  //       acc[apparatus] = assignments[gender][apparatus].filter((name) =>
+  //         selectedTeam[gender].includes(name)
+  //       );
+
+  //       return acc;
+  //     }, Object.create(null));
+
+  //     setAssignments((assignments) => {
+  //       const update = {
+  //         ...assignments,
+  //         [gender]: updatedSelections,
+  //       };
+
+  //       window.localStorage.setItem(
+  //         CACHE_KEYS.assignments,
+  //         JSON.stringify(update)
+  //       );
+
+  //       return update;
+  //     });
+  //   }, [assignments, apparatuses, selectedTeam, gender]);
 
   return (
     <Container
@@ -157,25 +184,23 @@ export default function AssignTeams() {
         </Select>
       </FormControl>
 
-      {selectedTeam[gender].length === 5 && apparatuses && assignments && (
-        <Paper
-          elevation={3}
-          style={{ padding: '20px', margin: '20px', maxWidth: '600px' }}
-        >
-          <List>
-            {apparatuses.map((apparatus) => (
-              <ApparatusListItem
-                key={apparatus}
-                apparatus={apparatus}
-                gender={gender}
-                assignments={assignments}
-                setAssignments={setAssignments}
-                selectedTeam={selectedTeam[gender]}
-              />
-            ))}
-          </List>
-        </Paper>
-      )}
+      <Paper
+        elevation={3}
+        style={{ padding: '20px', margin: '20px', maxWidth: '600px' }}
+      >
+        <List>
+          {apparatuses.map((apparatus) => (
+            <ApparatusListItem
+              key={apparatus}
+              apparatus={apparatus}
+              gender={gender}
+              assignments={assignments}
+              setAssignments={setAssignments}
+              selectedTeam={selectedTeam[gender]}
+            />
+          ))}
+        </List>
+      </Paper>
     </Container>
   );
 }

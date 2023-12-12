@@ -19,7 +19,7 @@ type ApparatusListItemProps = {
   assignments: Record<string, Record<string, string[]>>;
   gender: Gender;
   setAssignments: Dispatch<
-    SetStateAction<Record<string, Record<string, string[]>> | undefined>
+    SetStateAction<Record<string, Record<string, string[]>>>
   >;
   selectedTeam: string[];
 };
@@ -69,7 +69,7 @@ export function ApparatusListItem({
               <Select
                 labelId={`${apparatus}-label`}
                 multiple
-                value={assignments?.[gender]?.[apparatus] ?? []}
+                value={assignments[gender][apparatus]}
                 onChange={handleSelectChange}
                 label="Select Competitors"
                 placeholder="Select..."
