@@ -183,7 +183,7 @@ find_duplicates <- function(name1_words, idx, split_names) {
   comparisons <- sapply(split_names[(idx + 1):length(split_names)], function(name2_words) {
     all(name1_words %in% name2_words) || all(name2_words %in% name1_words)
   })
-  
+
   # Return indices of matches
   return(which(comparisons) + idx)
 }
@@ -194,7 +194,7 @@ get_duplicate_names_for_gender <- function(dataframe, gender_t) {
     dplyr::select(name) %>% 
     distinct()
   split_names <- strsplit(m_t$name, " ")
-  
+
   for (i in seq_along(split_names)) {
     matches <- find_duplicates(split_names[[i]], i, split_names)
     if (length(matches) > 0) {
@@ -203,7 +203,7 @@ get_duplicate_names_for_gender <- function(dataframe, gender_t) {
       potential_duplicates[[new_i]] <- c(m_t$name[i], matched_names)
     }
   }
-  
+
   return(potential_duplicates)
 }
 
