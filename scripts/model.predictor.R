@@ -1,7 +1,6 @@
-library(merTools)
-
 predict_scores <- function(data, lm_models) {
   # Initialize a column for the predicted scores
+  data$predicted_e_score <- NA
   data$predicted_score <- NA
 
   # Loop through each gender and apparatus combination
@@ -23,9 +22,12 @@ predict_scores <- function(data, lm_models) {
       newdata <- data[idx, c("all_avg_d_score", "name", "all_avg_score", "country")]
       names(newdata)[names(newdata) == "all_avg_score"] <- "avg_score_up_to"
       names(newdata)[names(newdata) == "all_avg_d_score"] <- "d_score"
-      
+
       # Get the prediction and prediction intervals
-      prediction <- predictInterval(model, newdata = as.data.frame(newdata), n.sims = 999)
+      prediction <- predict(model, newdata = newdata,
+                            interval = "prediction",
+                            level = 0.95)
+      prediction <- as.data.frame(prediction)
 
       # Randomly sample within the prediction interval for each index
       random_points <- rnorm(n = nrow(prediction), 
@@ -33,7 +35,9 @@ predict_scores <- function(data, lm_models) {
                              sd = (prediction$fit - prediction$lwr) / 1.96)
 
       # Assign these random points to the predicted_score column at the correct indices
-      data$predicted_score[idx] <- random_points
+      data$predicted_e_score[idx] <- random_points
+
+      data$predicted_score[idx] <- data$predicted_e_score[idx] + data$all_avg_d_score[idx]
     }
   }
 
