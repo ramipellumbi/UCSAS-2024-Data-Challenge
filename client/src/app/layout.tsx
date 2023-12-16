@@ -1,4 +1,7 @@
+import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { theme } from '@src/theme';
 import type { Metadata } from 'next';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'UCSAS 2024 Gymnastics Data Challenge',
@@ -12,7 +15,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <ColorSchemeScript />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+        />
+      </head>
+      <body>
+        <MantineProvider theme={theme}>
+          <Providers>{children}</Providers>
+        </MantineProvider>
+      </body>
     </html>
   );
 }
