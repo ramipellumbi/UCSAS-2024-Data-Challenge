@@ -96,7 +96,10 @@ prepare_data <- function(data_frame) {
     mutate(name = ifelse(name == "aberdeen o'driscol", "aberdeen odriscol", name)) %>%
     mutate(country = ifelse(country %in% c("ENG", "SCO"), "GBR", country)) %>%
     mutate(country = ifelse(country %in% c("GE1", "GE2"), "GER", country)) %>%
-    dplyr::select(name, gender, country, date, apparatus, d_score, e_score, penalty, score)
+    dplyr::select(name, gender, country, 
+                  date, apparatus, d_score, 
+                  e_score, penalty, score,
+                  round)
 
   # duplicate name cleaning that can be done simply
   dm <- get_duplicate_names_for_gender(prepared_data, "m")

@@ -59,9 +59,7 @@ get_exact_names <- function(dataframe, names) {
 }
 
 process_team_competitors <- function(dataframe, top_countries, named_competitors, gender) {
-  team_usa <- get_usa_five(predictions, gender)
   other_countries <- get_top_non_usa(predictions, top_countries, named_competitors, gender)
-  combined <- bind_rows(team_usa, other_countries)
-  return(combined)
+  return(other_countries)
 }
 
