@@ -1,5 +1,7 @@
 'use client';
 
+import { Gender } from '@/constants';
+import { loadJSON } from '@/loaders';
 import {
   Box,
   Button,
@@ -11,24 +13,17 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { memo, useCallback, useState } from 'react';
-
-const RANDOM_NAMES = [
-  'Rami Pellumbi',
-  'Abraham C',
-  'Chen M',
-  'Kayla K',
-  'Katie L',
-  'Katie S',
-].sort();
+import { memo, useCallback, useEffect, useState } from 'react';
 
 type TeamSelectionDrawerProps = {
+  gender: Gender;
   selectedTeam: string[];
   setSelectedTeam: (team: string[]) => void;
   disclosure: ReturnType<typeof useDisclosure>;
 };
 
 export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
+  gender,
   selectedTeam,
   setSelectedTeam,
   disclosure,
@@ -37,6 +32,19 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
 
   const [opened, { close }] = disclosure;
   const [internalTeamState, setInternalTeamState] = useState<string[]>(selectedTeam);
+  const [names, setNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadNamesJSON = async () => {
+      const json = await loadJSON('usa.json');
+      const names = json[gender];
+
+      setNames(names);
+    };
+
+    setInternalTeamState([]);
+    loadNamesJSON();
+  }, [setNames, gender]);
 
   const handleBoxClick = useCallback(
     (name: string) => {
@@ -55,53 +63,22 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
     close();
   }, [internalTeamState, close, setSelectedTeam]);
 
-  return (
-    <Drawer
-      opened={opened}
-      onClose={close}
-      title={selectedTeam.length != 5 ? 'Select a team for consideration' : 'Change team'}
-      padding="sm"
-      size="sm"
-      closeOnClickOutside={false}
-      closeOnEscape={false}
-      withCloseButton={false}
-    >
-      {RANDOM_NAMES.map((name, index) => (
-        <div key={name}>
-          <Box
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '10px',
-              cursor: 'pointer',
-              borderRadius: theme.radius.md,
-              '&:hover': { backgroundColor: theme.colors.gray[1] },
-            }}
-            onClick={() => handleBoxClick(name)}
-          >
-            <Checkbox
-              checked={internalTeamState.includes(name)}
-              readOnly
-              style={{ marginRight: '10px' }}
-            />
-            <Text
-              style={{
-                color:
-                  internalTeamState.length < 5 || internalTeamState.includes(name)
-                    ? 'inherit'
-                    : theme.colors.gray[5],
-              }}
-            >
-              {name}
-            </Text>
-          </Box>
-          {index < RANDOM_NAMES.length - 1 && <Divider />}
-        </div>
-      ))}
-
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px', gap: '10px' }}>
+  function Title({ title }: { title: string }) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flex: 1,
+          justifyContent: 'space-between',
+          padding: '10px 20px',
+          gap: '20px',
+          alignItems: 'center',
+          backgroundColor: 'white',
+        }}
+      >
+        <Text style={{ fontWeight: 500 }}>{title}</Text>
         <Tooltip label="Close without saving changes" withArrow position="bottom">
-          <Button disabled={selectedTeam.length != 5} variant="outline" color="red" onClick={close}>
+          <Button variant="outline" color="red" onClick={close}>
             Close
           </Button>
         </Tooltip>
@@ -115,6 +92,55 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
             Submit
           </Button>
         </Tooltip>
+      </div>
+    );
+  }
+
+  return (
+    <Drawer
+      opened={opened}
+      onClose={close}
+      title={
+        selectedTeam.length != 5 ? <Title title={'Select Team'} /> : <Title title={'Change Team'} />
+      }
+      size="sm"
+      closeOnClickOutside={false}
+      closeOnEscape={false}
+      withCloseButton={false}
+    >
+      <div style={{ overflowY: 'auto', maxHeight: 'calc(100% - 60px)' }}>
+        {names.map((name, index) => (
+          <div key={name}>
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px',
+                cursor: 'pointer',
+                borderRadius: theme.radius.md,
+                '&:hover': { backgroundColor: theme.colors.gray[1] },
+              }}
+              onClick={() => handleBoxClick(name)}
+            >
+              <Checkbox
+                checked={internalTeamState.includes(name)}
+                readOnly
+                style={{ marginRight: '10px' }}
+              />
+              <Text
+                style={{
+                  color:
+                    internalTeamState.length < 5 || internalTeamState.includes(name)
+                      ? 'inherit'
+                      : theme.colors.gray[5],
+                }}
+              >
+                {name}
+              </Text>
+            </Box>
+            {index < names.length - 1 && <Divider />}
+          </div>
+        ))}
       </div>
     </Drawer>
   );

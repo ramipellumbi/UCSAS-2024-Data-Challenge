@@ -8,75 +8,80 @@ import styles from './Home.module.css';
 
 import { ApparatusCard, GenderTab, TeamSelectedView, TeamSelectionDrawer } from '@/components';
 import { Apparatuses, Gender } from '@/constants';
-import { Button } from '@mantine/core';
+import { Button, Group, Stepper, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import React, { useCallback, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import { act } from 'react-dom/test-utils';
 
 export function HomeClient() {
   const disclosure = useDisclosure(true);
 
-  const [teamData, setTeamData] = useState<{
-    [gender in Gender]: string[];
-  }>({ m: [], w: [] });
-  const [apparatusData, setApparatusData] = useState<{
-    [gender in Gender]: {
-      [apparatus in Apparatuses[gender][number]]: string[];
+  const [teamM, setTeamM] = useState<string[]>([]);
+  const [teamW, setTeamW] = useState<string[]>([]);
+
+  /**
+   * Keeping in an object of type { [gender]: { [apparatus]: string[] } }
+   * would seem much better but it causes performance issues due to deep
+   * state updates
+   */
+
+  // Men's apparatuses
+  const [apparatusFXM, setApparatusFXM] = useState<string[]>([]);
+  const [apparatusPHM, setApparatusPHM] = useState<string[]>([]);
+  const [apparatusSRM, setApparatusSRM] = useState<string[]>([]);
+  const [apparatusVTM, setApparatusVTM] = useState<string[]>([]);
+  const [apparatusPBM, setApparatusPBM] = useState<string[]>([]);
+  const [apparatusHBM, setApparatusHBM] = useState<string[]>([]);
+
+  // Women's apparatuses
+  const [apparatusVTW, setApparatusVTW] = useState<string[]>([]);
+  const [apparatusUBW, setApparatusUBW] = useState<string[]>([]);
+  const [apparatusBBW, setApparatusBBW] = useState<string[]>([]);
+  const [apparatusFXW, setApparatusFXW] = useState<string[]>([]);
+
+  const handleSelectMemberForApparatus =
+    (setApparatus: Dispatch<SetStateAction<string[]>>, apparatusTeam: string[]) =>
+    (member: string) => {
+      const updatedTeam = apparatusTeam.includes(member)
+        ? apparatusTeam.filter((m) => m !== member)
+        : [...apparatusTeam, member];
+      setApparatus(updatedTeam);
     };
-  }>({
-    m: {
-      FX: [],
-      PH: [],
-      SR: [],
-      VT: [],
-      PB: [],
-      HB: [],
-    },
-    w: {
-      VT: [],
-      UB: [],
-      BB: [],
-      FX: [],
-    },
-  });
+
   const [activeTab, setActiveTab] = useState<Gender>('m');
-
-  const selectedTeam = teamData[activeTab];
-  const apparatusTeams = apparatusData[activeTab];
-
-  const setSelectedTeam = useCallback(
-    (team: string[]) => {
-      setTeamData({ ...teamData, [activeTab]: team });
-    },
-    [activeTab, teamData, setTeamData]
-  );
-
-  const handleSelectMemberForApparatus = useCallback(
-    (apparatus: string, member: string) => {
-      const currentApparatusTeam = apparatusTeams[apparatus as keyof typeof apparatusTeams];
-      if (currentApparatusTeam.includes(member)) {
-        // Remove the member if already selected
-        setApparatusData({
-          ...apparatusData,
-          [activeTab]: {
-            ...apparatusTeams,
-            [apparatus]: currentApparatusTeam.filter((m) => m !== member),
-          },
-        });
-      } else if (currentApparatusTeam.length < 4) {
-        // Add the member if not already selected and if less than 4 members
-        setApparatusData({
-          ...apparatusData,
-          [activeTab]: {
-            ...apparatusTeams,
-            [apparatus]: [...currentApparatusTeam, member],
-          },
-        });
-      }
-    },
-    [apparatusTeams, apparatusData, activeTab]
-  );
-
+  const selectedTeam = activeTab === 'm' ? teamM : teamW;
   const teamButtonLabel = selectedTeam.length === 5 ? 'Change Team' : 'Select Team';
+
+  const areAllApparatusesComplete =
+    activeTab === 'm'
+      ? apparatusFXM.length === 4 &&
+        apparatusPHM.length === 4 &&
+        apparatusSRM.length === 4 &&
+        apparatusVTM.length === 4 &&
+        apparatusPBM.length === 4 &&
+        apparatusHBM.length === 4
+      : apparatusVTW.length === 4 &&
+        apparatusUBW.length === 4 &&
+        apparatusBBW.length === 4 &&
+        apparatusFXW.length === 4;
+
+  useEffect(() => {
+    if (activeTab === 'm') {
+      // clear all men apparatuses when new team is chosen
+      setApparatusFXM([]);
+      setApparatusPHM([]);
+      setApparatusSRM([]);
+      setApparatusVTM([]);
+      setApparatusPBM([]);
+      setApparatusHBM([]);
+    } else {
+      // clear all woman apparatuses when new team is chosen
+      setApparatusVTW([]);
+      setApparatusUBW([]);
+      setApparatusBBW([]);
+      setApparatusFXW([]);
+    }
+  }, [selectedTeam]);
 
   return (
     <>
@@ -99,22 +104,85 @@ export function HomeClient() {
       </div>
       <TeamSelectedView selectedTeam={selectedTeam} />
       <TeamSelectionDrawer
+        gender={activeTab}
         disclosure={disclosure}
         selectedTeam={selectedTeam}
-        setSelectedTeam={setSelectedTeam}
+        setSelectedTeam={activeTab === 'm' ? setTeamM : setTeamW}
       />
 
-      {selectedTeam.length === 5 && (
+      {areAllApparatusesComplete && (
+        <Button className={styles.floatingButton} onClick={() => {}}>
+          Get Results
+        </Button>
+      )}
+
+      {activeTab === 'm' && teamM.length === 5 && (
         <div className={styles.apparatusContainer}>
-          {Object.keys(apparatusTeams).map((apparatus) => (
-            <ApparatusCard
-              key={apparatus}
-              apparatus={apparatus}
-              team={selectedTeam}
-              selectedMembers={apparatusTeams[apparatus as keyof typeof apparatusTeams]}
-              onSelect={handleSelectMemberForApparatus}
-            />
-          ))}
+          <ApparatusCard
+            apparatus="FX"
+            team={teamM}
+            selectedMembers={apparatusFXM}
+            onSelect={handleSelectMemberForApparatus(setApparatusFXM, apparatusFXM)}
+          />
+          <ApparatusCard
+            apparatus="PH"
+            team={teamM}
+            selectedMembers={apparatusPHM}
+            onSelect={handleSelectMemberForApparatus(setApparatusPHM, apparatusPHM)}
+          />
+          <ApparatusCard
+            apparatus="SR"
+            team={teamM}
+            selectedMembers={apparatusSRM}
+            onSelect={handleSelectMemberForApparatus(setApparatusSRM, apparatusSRM)}
+          />
+          <ApparatusCard
+            apparatus="VT"
+            team={teamM}
+            selectedMembers={apparatusVTM}
+            onSelect={handleSelectMemberForApparatus(setApparatusVTM, apparatusVTM)}
+          />
+          <ApparatusCard
+            apparatus="PB"
+            team={teamM}
+            selectedMembers={apparatusPBM}
+            onSelect={handleSelectMemberForApparatus(setApparatusPBM, apparatusPBM)}
+          />
+          <ApparatusCard
+            apparatus="HB"
+            team={teamM}
+            selectedMembers={apparatusHBM}
+            onSelect={handleSelectMemberForApparatus(setApparatusHBM, apparatusHBM)}
+          />
+        </div>
+      )}
+
+      {activeTab === 'w' && teamW.length === 5 && (
+        <div className={styles.apparatusContainer}>
+          <ApparatusCard
+            apparatus="BB"
+            team={teamW}
+            selectedMembers={apparatusBBW}
+            onSelect={handleSelectMemberForApparatus(setApparatusBBW, apparatusBBW)}
+          />
+          <ApparatusCard
+            apparatus="FX"
+            team={teamW}
+            selectedMembers={apparatusFXW}
+            onSelect={handleSelectMemberForApparatus(setApparatusFXW, apparatusFXW)}
+          />
+          <ApparatusCard
+            apparatus="UB"
+            team={teamW}
+            selectedMembers={apparatusUBW}
+            onSelect={handleSelectMemberForApparatus(setApparatusUBW, apparatusUBW)}
+          />
+          <ApparatusCard
+            apparatus="VT"
+            team={teamW}
+            selectedMembers={apparatusVTW}
+            onSelect={handleSelectMemberForApparatus(setApparatusVTW, apparatusVTW)}
+          />
         </div>
       )}
     </>

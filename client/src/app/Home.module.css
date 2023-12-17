@@ -8,6 +8,28 @@
   margin-bottom: 20px;
 }
 
+.floatingButton {
+  position: fixed;
+  bottom: -100px; /* Start off-screen */
+  right: 20px;
+  z-index: 1000;
+  animation: slideUp 0.5s forwards; /* Animation to slide the button up */
+  font-size: 1.5em; /* Further increased font size */
+  font-weight: bold; /* Bolder font */
+  background-color: #005f73; /* Background color */
+  color: white; /* Text color */
+  border: none; /* No border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+  cursor: pointer; /* Cursor pointer on hover */
+}
+
+@keyframes slideUp {
+  to {
+    bottom: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .apparatusCard {
     width: calc(50% - 20px); /* Two cards per row for smaller screens */

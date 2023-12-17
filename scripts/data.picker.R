@@ -63,3 +63,18 @@ process_team_competitors <- function(dataframe, top_countries, named_competitors
   return(other_countries)
 }
 
+order_country <- function(dataframe, country_t, gender_t) {
+  sorted_country <- dataframe %>%
+    filter(gender == gender_t & country == country_t) %>%
+    group_by(name, apparatus) %>%
+    summarize(avg_for_apparatus = mean(predicted_score), .groups = "keep") %>%
+    ungroup() %>%
+    group_by(name) %>%
+    summarize(total_score = sum(avg_for_apparatus)) %>%
+    arrange(desc(total_score)) %>%
+    ungroup() %>%
+    dplyr::select(name)
+  
+  return(sorted_country)
+}
+

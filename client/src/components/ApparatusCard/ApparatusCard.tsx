@@ -1,12 +1,13 @@
 import { memo } from 'react';
 import { Text } from '@mantine/core';
 import styles from './ApparatusCard.module.css';
+import { Apparatus } from '@/constants';
 
 type ApparatusCardProps = {
-  apparatus: string;
+  apparatus: Apparatus;
   team: string[];
   selectedMembers: string[];
-  onSelect: (apparatus: string, member: string) => void;
+  onSelect: (member: string) => void;
 };
 
 export const ApparatusCard = memo(function ApparatusCard({
@@ -32,7 +33,7 @@ export const ApparatusCard = memo(function ApparatusCard({
             isComplete={isComplete}
             member={member}
             isSelected={selectedMembers.includes(member)}
-            onClick={() => onSelect(apparatus, member)}
+            onClick={() => onSelect(member)}
           />
         ))}
       </div>

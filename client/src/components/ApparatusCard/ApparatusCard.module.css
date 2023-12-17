@@ -1,5 +1,5 @@
 .apparatusCard {
-  width: calc(33% - 20px); /* Adjust width for three cards per row */
+  width: calc(50% - 20px);
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -17,7 +17,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.01s ease;
 }
 
 .memberCardSelected {

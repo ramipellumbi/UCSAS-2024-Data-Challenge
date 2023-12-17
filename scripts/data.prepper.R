@@ -134,45 +134,8 @@ prepare_data <- function(data_frame) {
   # get a start and end date of each competition
   cleaned_data <- clean_dates(prepared_data)
 
-  # for each athlete, get their first start date
-  df_first_date <- cleaned_data %>%
-    group_by(name, apparatus) %>%
-    summarise(first_date = min(start_date), .groups = "keep")
-
-  # left join the first date to the original data
-  cleaned_data <- cleaned_data %>%
-    left_join(df_first_date, by = c("name", "apparatus"))
-
-  # get summary of performance
-  df_summary <- cleaned_data %>%
-    arrange(name, apparatus, start_date) %>%
-    group_by(name, apparatus) %>%
-    mutate(is_first_date = start_date == first_date,
-           cumulative_score = cumsum(score),
-           count = row_number()) %>%
-    ungroup() %>%
-    mutate(cumulative_score = ifelse(is_first_date, 0, cumulative_score),
-           count = ifelse(is_first_date, 1, count))
-
-  # return dataframe computes average up to date for each athlete
-  df_final <- cleaned_data %>%
-    group_by(name, apparatus) %>%
-    mutate(avg_score_up_to = map_dbl(start_date, ~ {
-      current_date <- .x
-      subset_df <- df_summary %>%
-        filter(name == name & apparatus == apparatus & start_date < current_date)
-      if (nrow(subset_df) == 0) {
-        NA_real_
-      } else {
-        last(subset_df$cumulative_score) / last(subset_df$count)
-      }
-    })) %>%
-    ungroup() %>%
-    mutate(avg_score_up_to = ifelse(avg_score_up_to == 0, NA, avg_score_up_to)) %>%
-    arrange(name, start_date, apparatus)
-
   # get global average on score and d_score for each gender, apparatus, name
-  df_final <- df_final %>% 
+  df_final <- cleaned_data %>% 
     group_by(gender, apparatus, name) %>%
     mutate(all_avg_score = mean(score, na.rm = TRUE),
            all_avg_d_score = mean(d_score, na.rm = TRUE)) %>%

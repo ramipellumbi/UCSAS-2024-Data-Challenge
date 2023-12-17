@@ -21,6 +21,7 @@
     "paths": {
       "@/components": ["./src/components"],
       "@/constants": ["./src/constants"],
+      "@/loaders": ["./src/loaders"],
       "@/networking": ["./src/networking"],
       "@/src/*": ["./src/*"]
     }
