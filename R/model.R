@@ -61,8 +61,7 @@ predict_scores_from_models <- function(data, lm_models) {
     
     # Check if there are any matching rows
     if (length(idx) > 0) {
-      newdata <- data[idx, c("all_avg_d_score", "name", "all_avg_score", "country")]
-      names(newdata)[names(newdata) == "all_avg_score"] <- "avg_score_up_to"
+      newdata <- data[idx, c("all_avg_d_score", "name")]
       names(newdata)[names(newdata) == "all_avg_d_score"] <- "d_score"
       
       # Get the prediction and prediction intervals

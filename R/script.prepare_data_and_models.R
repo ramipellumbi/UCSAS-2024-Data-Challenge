@@ -13,9 +13,9 @@
 
 library(tidyverse)
 
-source("./data.R")
-source("./model.R")
-source("./utilities.R")
+source("R/data.R")
+source("R/model.R")
+source("R/utilities.R")
 
 na_pad <- function(x, len) {
   x[1:len]
@@ -81,8 +81,10 @@ w67 <- get_top_remaining(predictions, top_countries, all_named, "w", n = 14)
 women <- bind_rows(women, w67)
 men <- bind_rows(men, m67)
 
-write.csv(women, "./data/w.csv", row.names = FALSE)
-write.csv(men, "./data/m.csv", row.names = FALSE)
+saveRDS(lm_models, "server/models.RDS")
+saveRDS(df, "server/df.rds")
+write.csv(women, "server/w.csv", row.names = FALSE)
+write.csv(men, "server/m.csv", row.names = FALSE)
 
 usa_m_all_ordered <- order_country(predictions, "USA", "m")
 usa_w_all_ordered <- order_country(predictions, "USA", "w")

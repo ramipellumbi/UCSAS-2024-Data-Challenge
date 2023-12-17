@@ -2,13 +2,15 @@
 
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
 
-import { Button } from '@mantine/core';
+import { Box, Button, LoadingOverlay } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 
 import styles from './Home.module.css';
 
 import { ApparatusCard, GenderTab, TeamSelectedView, TeamSelectionDrawer } from '@/components';
 import { Gender } from '@/constants';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 export function HomeClient() {
   const disclosure = useDisclosure(false);
@@ -66,6 +68,33 @@ export function HomeClient() {
     key: 'apparatusFXW',
   });
 
+  const mutation = useMutation({
+    mutationKey: ['simulate'],
+    mutationFn: async () => {
+      const body: any = {};
+      if (activeTab === 'm') {
+        body['gender'] = 'm';
+        body['team'] = teamM;
+        body['FX'] = apparatusFXM;
+        body['PH'] = apparatusPHM;
+        body['SR'] = apparatusSRM;
+        body['VT'] = apparatusVTM;
+        body['PB'] = apparatusPBM;
+        body['HB'] = apparatusHBM;
+      } else {
+        body['gender'] = 'w';
+        body['team'] = teamW;
+        body['VT'] = apparatusVTW;
+        body['UB'] = apparatusUBW;
+        body['BB'] = apparatusBBW;
+        body['FX'] = apparatusFXW;
+      }
+      await axios.post('/simulate', {
+        body,
+      });
+    },
+  });
+
   const handleSelectMemberForApparatus =
     (setApparatus: Dispatch<SetStateAction<string[]>>, apparatusTeam: string[]) =>
     (member: string) => {
@@ -101,7 +130,12 @@ export function HomeClient() {
   const hasSimulationResults = false;
 
   return (
-    <>
+    <Box pos="relative">
+      <LoadingOverlay
+        visible={mutation.isPending}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
       <div
         style={{
           display: 'flex',
@@ -128,7 +162,12 @@ export function HomeClient() {
       />
 
       {areAllApparatusesComplete && (
-        <Button className={styles.floatingButton} onClick={() => {}}>
+        <Button
+          className={styles.floatingButton}
+          onClick={async () => {
+            await mutation.mutateAsync();
+          }}
+        >
           {hasSimulationResults ? 'View Results' : 'Simulate'}
         </Button>
       )}
@@ -202,6 +241,6 @@ export function HomeClient() {
           />
         </div>
       )}
-    </>
+    </Box>
   );
 }
