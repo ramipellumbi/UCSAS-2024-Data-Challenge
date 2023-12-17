@@ -69,6 +69,9 @@ export function HomeClient() {
   const handleSelectMemberForApparatus =
     (setApparatus: Dispatch<SetStateAction<string[]>>, apparatusTeam: string[]) =>
     (member: string) => {
+      if (apparatusTeam.length === 4) {
+        return;
+      }
       const updatedTeam = apparatusTeam.includes(member)
         ? apparatusTeam.filter((m) => m !== member)
         : [...apparatusTeam, member];
@@ -95,36 +98,7 @@ export function HomeClient() {
         apparatusBBW.length === 4 &&
         apparatusFXW.length === 4;
 
-  useEffect(() => {
-    if (activeTab === 'm') {
-      // clear all men apparatuses when new team is chosen
-      setApparatusFXM([]);
-      setApparatusPHM([]);
-      setApparatusSRM([]);
-      setApparatusVTM([]);
-      setApparatusPBM([]);
-      setApparatusHBM([]);
-    } else {
-      // clear all woman apparatuses when new team is chosen
-      setApparatusVTW([]);
-      setApparatusUBW([]);
-      setApparatusBBW([]);
-      setApparatusFXW([]);
-    }
-  }, [
-    selectedTeam,
-    activeTab,
-    setApparatusFXM,
-    setApparatusPHM,
-    setApparatusSRM,
-    setApparatusVTM,
-    setApparatusPBM,
-    setApparatusHBM,
-    setApparatusVTW,
-    setApparatusUBW,
-    setApparatusBBW,
-    setApparatusFXW,
-  ]);
+  const hasSimulationResults = false;
 
   return (
     <>
@@ -155,7 +129,7 @@ export function HomeClient() {
 
       {areAllApparatusesComplete && (
         <Button className={styles.floatingButton} onClick={() => {}}>
-          Get Results
+          {hasSimulationResults ? 'View Results' : 'Simulate'}
         </Button>
       )}
 
