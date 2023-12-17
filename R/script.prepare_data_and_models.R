@@ -86,8 +86,28 @@ saveRDS(df, "server/df.rds")
 write.csv(women, "server/w.csv", row.names = FALSE)
 write.csv(men, "server/m.csv", row.names = FALSE)
 
+# csv of the team competitors (55 non USA people selected via c12)
+write.csv(w12, 'server/team_w.csv', row.names = FALSE)
+write.csv(m12, 'server/team_m.csv', row.names = FALSE)
+
+# csv of the 36 alternates 
+write.csv(bind_rows(w3, w45, w67, whu), 'server/alt_w.csv', row.names = FALSE)
+write.csv(bind_rows(m3, m45, m67, mhu), 'server/alt_m.csv', row.names = FALSE)
+
 usa_m_all_ordered <- order_country(predictions, "USA", "m")
 usa_w_all_ordered <- order_country(predictions, "USA", "w")
 gender_list <- list(m = usa_m_all_ordered$name, w = usa_w_all_ordered$name)
 usa_json <- jsonlite::toJSON(gender_list, pretty = TRUE, auto_unbox = TRUE, dataframe = "columns", rownames = FALSE)
 write(usa_json, file = "./client/public/usa.json")
+
+# create a list of each apparatus.gender pair and all the names of the competitors for that apparatus.gender
+# this is used to prevent ill selections by the user client side
+grouped_names <- df %>%
+  group_by(apparatus, gender) %>%
+  summarise(names = list(unique(name))) %>%
+  mutate(key = paste(apparatus, gender, sep = ".")) %>%
+  dplyr::select(key, names)
+apparatus_names_list <- split(grouped_names$names, grouped_names$key)
+apparatus_names_list <- lapply(apparatus_names_list, function(x) unlist(x))
+apparatus_names_list_json <- jsonlite::toJSON(apparatus_names_list, pretty = TRUE, auto_unbox = TRUE, dataframe = "columns", rownames = FALSE)
+write(apparatus_names_list_json, file = "./client/public/apparatus_names.json")

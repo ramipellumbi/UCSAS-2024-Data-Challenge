@@ -24,7 +24,7 @@ prepare_data <- function(data_frame) {
     mutate(apparatus = ifelse(apparatus %in% c("VT1", "VT2"),
                               "VT",
                               apparatus)) %>%
-    mutate(apparatus = tolower(apparatus)) %>%
+    mutate(apparatus = toupper(apparatus)) %>%
     # manual duplicate fixes ...
     mutate(name = ifelse(name == "frederick richard", "frederick nathaniel richard", name)) %>%
     mutate(name = ifelse(name == "ian skirkey", "ian hunter skirkey", name)) %>%
@@ -102,8 +102,10 @@ prepare_data <- function(data_frame) {
     mutate(name = ifelse(name == "jose martinez", "jose manuel martinez moreno", name)) %>%
     mutate(name = ifelse(name == "manuel martinez", "jose manuel martinez moreno", name)) %>%
     mutate(name = ifelse(name == "aberdeen o'driscol", "aberdeen odriscol", name)) %>%
-    mutate(country = ifelse(country %in% c("ENG", "SCO"), "GBR", country)) %>%
+    mutate(country = ifelse(country %in% c("ENG", "SCO", "WAL"), "GBR", country)) %>%
     mutate(country = ifelse(country %in% c("GE1", "GE2"), "GER", country)) %>%
+    # Northern Ireland athletes were all made a part of IRL since they get a choice I made it for them
+    mutate(country = ifelse(country == "NIR", "IRL", country)) %>%
     dplyr::select(name, gender, country, 
                   date, apparatus, d_score, 
                   e_score, penalty, score,

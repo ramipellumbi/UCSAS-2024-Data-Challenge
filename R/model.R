@@ -9,7 +9,7 @@ library(MASS)
 #   A list of linear models, each corresponding to a unique combination of apparatus and gender.
 fit_model <- function(data) {
   data <- data %>%
-    filter(!is.na(d_score), !is.na(e_score), !is.na(country))
+    filter(!is.na(d_score), !is.na(e_score), !is.na(name))
   split_data <- data %>%
     split(., list(.$apparatus, .$gender))
   split_data <- split_data[sapply(split_data, nrow) > 0]
@@ -26,7 +26,7 @@ fit_model <- function(data) {
     # the idea is that d_score for an athlete is essentially fixed for an apparatus
     model <- lm(e_score ~ d_score + name,
                 data = sub_df)
-    
+
     selected_model <- stepAIC(model, direction = "both", trace = FALSE)
     return(selected_model)
   })

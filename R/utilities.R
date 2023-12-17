@@ -51,6 +51,15 @@ get_top_remaining <- function(dataframe, top_countries, named_competitors, gende
     dplyr::select(name) %>%
     distinct()
   
+  # for each get the country they are from in dataframe
+  # add country column to top_n_remaining
+  
+  top_n_remaining <- top_n_remaining %>%
+    left_join(dataframe %>%
+                dplyr::select(name, country),
+              by = "name") %>%
+    distinct()
+  
   return(top_n_remaining)
 }
 
@@ -81,6 +90,12 @@ get_exact_names <- function(dataframe, names) {
   exact_names <- dataframe %>%
     filter(name %in% names) %>%
     dplyr::select(name) %>%
+    distinct()
+  
+  exact_names <- exact_names %>%
+    left_join(dataframe %>%
+                dplyr::select(name, country),
+              by = "name") %>%
     distinct()
   
   return(exact_names)

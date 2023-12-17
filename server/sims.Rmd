@@ -1,0 +1,120 @@
+```{r}
+source("R/model.R")
+
+source("server/scripts/simulate.get_team_final_qualifiers.R")
+source("server/scripts/simulate.get_team_aa_medalists.R")
+
+source('server/scripts/simulate.get_eligible_individuals_for_aa_final.R')
+source("server/scripts/simulate.get_individual_aa_final_qualifiers.R")
+source("server/scripts/simulate.get_individual_aa_medalists.R")
+
+source("server/scripts/simulate.get_apparatus_final_qualifiers.R")
+source("server/scripts/simulate.get_apparatus_final_medalists.R")
+
+df <- readRDS("server/df.rds")
+models <- readRDS("server/models.rds")
+df <- df %>%
+  dplyr::select(name, gender, country, apparatus, all_avg_d_score)
+
+for (gender_t in c("m")) {
+  # pick a team of 5 for the US
+  for (team_sim in 1:1) {
+    countries_df <- read.csv("server/top_countries.csv")
+    countries <- countries_df[[gender_t]]
+    
+    alternates <- read.csv(paste0("server/alt_", gender_t, ".csv"))
+    alternates_df <- df %>% 
+      filter(name %in% alternates$name) %>%
+      group_by(name, gender, country, apparatus) %>%
+      summarise(all_avg_d_score = first(all_avg_d_score),
+                .groups = "keep") %>%
+      ungroup()
+    
+    df_g <- df %>% 
+      filter(gender == gender_t)
+  
+    filename <- paste0("server/", gender_t, '.csv')
+    non_usa_competitors <- read.csv(filename)
+    
+    usa_options <- df_g %>%
+      filter(country == "USA") %>%
+      group_by(name, gender, country, apparatus) %>%
+      summarise(all_avg_d_score = first(all_avg_d_score),
+                .groups = "keep") %>%
+      ungroup() %>%
+      group_by(gender, country, apparatus) %>%
+      sample_n(5, replace = FALSE) %>%
+      ungroup()
+    
+    temp <- non_usa_competitors %>% 
+      filter(country %in% countries)
+    other_options = df_g %>%
+      filter(name %in% temp$name) %>%
+      group_by(name, gender, country, apparatus) %>%
+      summarise(all_avg_d_score = first(all_avg_d_score),
+                .groups = "keep") %>%
+      ungroup()
+    
+    # sample different pairings of 4 for each apparatus
+    for (sample_sim in 1:1) {
+      # run multiple simulations for this pairing
+      for (run in 1:1) {
+        usa_sample <- usa_options %>%
+          group_by(apparatus) %>%
+          sample_n(4, replace = FALSE) %>%
+          ungroup()
+        other_sample <- other_options %>%
+          group_by(country, name, apparatus, gender) %>%
+          summarise(all_avg_d_score = mean(all_avg_d_score),
+                    .groups = "keep") %>%
+          group_by(country, apparatus, gender) %>%
+          sample_n(4, replace = FALSE) %>%
+          ungroup()
+        country_competitors <- bind_rows(usa_sample, other_sample)
+        
+        # all 96 men and women compete in qualifications - 
+        # this is the 36 alternates AND the
+      
+        for (score_simulation in c(1:1)) {
+          sim_team <- predict_scores_from_models(country_competitors,
+                                                 models)
+          sim_alternates <- predict_scores_from_models(alternates_df,
+                                                       models)
+          
+          # teams that qualified for the final round
+          team_final_qualifiers <- get_team_final_qualifiers(sim_team)
+          
+          # team medalists
+          team_medalists <- get_team_aa_medalists(sim_team,
+                                                  team_final_qualifiers,
+                                                  models)
+          
+          
+          # athletes eligible for the individual aa qualifiers are ones that competed on all apparatuses
+          eligible_individuals_from_team <- get_eligible_individuals_for_aa_final(sim_team)
+          eligible_individuals_from_alternates <- get_eligible_individuals_for_aa_final(sim_alternates)
+          # combine these with the alternates
+          individual_competitors_sim <- bind_rows(eligible_individuals_from_alternates,
+                                                  eligible_individuals_from_team)
+          # get the individual aa qualifiers
+          individual_aa_final_qualifiers <- get_individual_aa_final_qualifiers(individual_competitors_sim)
+          
+          # athletes that received a medal in the individual aa final
+          individual_aa_medalists <- get_individual_aa_medalists(individual_aa_final_qualifiers,
+                                                                 individual_aa_final_qualifiers,
+                                                                 models)
+          
+          # athletes that qualified for the apparatus for each apparatus final
+          apparatus_final_qualifiers <- get_apparatus_final_qualifiers(bind_rows(sim_team, sim_alternates))
+          apparatus_medalists <- get_apparatus_final_medalists(apparatus_final_qualifiers,
+                                                               models)
+        }
+      }
+    }
+  }
+}
+```
+  
+  
+  
+  
