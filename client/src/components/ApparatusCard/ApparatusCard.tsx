@@ -63,7 +63,11 @@ const MemberCard = memo(function MemberCard({
   onClick,
 }: MemberCardProps) {
   const getTextColor = () => {
-    if (isComplete || !isClickable) {
+    if (!isClickable) {
+      return 'gray';
+    }
+
+    if (isComplete && !isSelected) {
       return 'gray';
     }
 
