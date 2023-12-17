@@ -1,18 +1,17 @@
+import '@mantine/core/styles.css';
+
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import { theme } from '@src/theme';
+import { theme } from '@/src/theme';
 import type { Metadata } from 'next';
 import { Providers } from './providers';
+import { Navigation } from '@/components';
 
 export const metadata: Metadata = {
   title: 'UCSAS 2024 Gymnastics Data Challenge',
   description: 'UI by Rami Pellumbi',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -24,7 +23,9 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme}>
-          <Providers>{children}</Providers>
+          <Navigation>
+            <Providers>{children}</Providers>
+          </Navigation>
         </MantineProvider>
       </body>
     </html>

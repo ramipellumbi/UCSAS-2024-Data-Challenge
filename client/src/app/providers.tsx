@@ -1,3 +1,5 @@
+'use client';
+
 import { configAxios } from '@/networking';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 

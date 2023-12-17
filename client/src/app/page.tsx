@@ -1,3 +1,9 @@
+/**
+ * Server component that injects the client component
+ */
+
+import { HomeClient } from './page.client';
+
 export default function Home() {
-  return <h1>Home</h1>;
+  return <HomeClient />;
 }
