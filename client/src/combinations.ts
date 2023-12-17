@@ -49,10 +49,7 @@ class Combinations {
     const [first, ...rest] = arr;
 
     const withoutFirst = this._compute(rest, k);
-    const withFirst = this._compute(rest, k - 1).map((comb) => [
-      first,
-      ...comb,
-    ]);
+    const withFirst = this._compute(rest, k - 1).map((comb) => [first, ...comb]);
 
     return [...withoutFirst, ...withFirst];
   }

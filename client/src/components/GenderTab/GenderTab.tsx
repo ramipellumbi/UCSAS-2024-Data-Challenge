@@ -1,6 +1,9 @@
+import { Dispatch, memo, SetStateAction } from 'react';
+
 import { Tabs } from '@mantine/core';
+
 import styles from './GenderTab.module.css';
-import { Dispatch, SetStateAction, memo } from 'react';
+
 import { Gender } from '@/constants';
 
 type GenderTabProps = {

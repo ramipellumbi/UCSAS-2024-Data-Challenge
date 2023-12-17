@@ -1,6 +1,6 @@
-import styles from './TeamSelectedView.module.css'; // Adjust the path according to your file structure
-
 import { memo } from 'react';
+
+import styles from './TeamSelectedView.module.css';
 
 type TeamSelectedViewProps = {
   selectedTeam: string[];

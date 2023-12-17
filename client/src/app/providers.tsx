@@ -1,7 +1,8 @@
 'use client';
 
-import { configAxios } from '@/networking';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+import { configAxios } from '@/networking';
 
 // configure networking for the app with interceptors set up
 configAxios();

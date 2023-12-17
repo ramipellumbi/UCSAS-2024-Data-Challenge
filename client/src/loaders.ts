@@ -1,13 +1,13 @@
 import Papa from 'papaparse';
 
-export const loadJSON = async (fileName: string): Promise<any> => {
+export const loadJSON = async (fileName: string): Promise<unknown> => {
   const response = await fetch(fileName);
   const data = await response.json();
 
   return data;
 };
 
-export const loadCsv = async (fileName: string): Promise<Papa.ParseResult<any>> => {
+export const loadCsv = async (fileName: string): Promise<Papa.ParseResult<unknown>> => {
   const response = await fetch(fileName);
   const parsed = await response.text();
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { Gender } from '@/constants';
-import { loadJSON } from '@/loaders';
+import { memo, useCallback, useEffect, useState } from 'react';
+
 import {
   Box,
   Button,
@@ -13,7 +13,9 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { memo, useCallback, useEffect, useState } from 'react';
+
+import { Gender } from '@/constants';
+import { loadJSON } from '@/loaders';
 
 type TeamSelectionDrawerProps = {
   gender: Gender;
@@ -37,9 +39,10 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
   useEffect(() => {
     const loadNamesJSON = async () => {
       const json = await loadJSON('usa.json');
-      const names = json[gender];
+      const names = processJSON(json);
+      const namesForGender = names[gender];
 
-      setNames(names);
+      setNames(namesForGender);
     };
 
     setInternalTeamState([]);
@@ -145,3 +148,22 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
     </Drawer>
   );
 });
+
+const processJSON = (json: unknown): { m: string[]; w: string[] } => {
+  if (typeof json !== 'object' || json === null) {
+    throw new Error('Invalid JSON');
+  }
+
+  if (!('m' in json) || !('w' in json)) {
+    throw new Error('Invalid JSON');
+  }
+
+  const m = json['m'];
+  const w = json['w'];
+
+  if (!Array.isArray(m) || !Array.isArray(w)) {
+    throw new Error('Invalid JSON');
+  }
+
+  return { m, w };
+};

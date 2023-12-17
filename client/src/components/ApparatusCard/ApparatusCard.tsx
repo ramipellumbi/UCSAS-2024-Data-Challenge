@@ -1,6 +1,9 @@
 import { memo } from 'react';
+
 import { Text } from '@mantine/core';
+
 import styles from './ApparatusCard.module.css';
+
 import { Apparatus } from '@/constants';
 
 type ApparatusCardProps = {

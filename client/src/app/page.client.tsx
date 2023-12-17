@@ -1,23 +1,20 @@
-/**
- * Client rendered page
- */
-
 'use client';
+
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
+
+import { Button } from '@mantine/core';
+import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 
 import styles from './Home.module.css';
 
 import { ApparatusCard, GenderTab, TeamSelectedView, TeamSelectionDrawer } from '@/components';
-import { Apparatuses, Gender } from '@/constants';
-import { Button, Group, Stepper, Tooltip } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-import { act } from 'react-dom/test-utils';
+import { Gender } from '@/constants';
 
 export function HomeClient() {
-  const disclosure = useDisclosure(true);
+  const disclosure = useDisclosure(false);
 
-  const [teamM, setTeamM] = useState<string[]>([]);
-  const [teamW, setTeamW] = useState<string[]>([]);
+  const [teamM, setTeamM] = useLocalStorage<string[]>({ defaultValue: [], key: 'teamM' });
+  const [teamW, setTeamW] = useLocalStorage<string[]>({ defaultValue: [], key: 'teamW' });
 
   /**
    * Keeping in an object of type { [gender]: { [apparatus]: string[] } }
@@ -26,18 +23,48 @@ export function HomeClient() {
    */
 
   // Men's apparatuses
-  const [apparatusFXM, setApparatusFXM] = useState<string[]>([]);
-  const [apparatusPHM, setApparatusPHM] = useState<string[]>([]);
-  const [apparatusSRM, setApparatusSRM] = useState<string[]>([]);
-  const [apparatusVTM, setApparatusVTM] = useState<string[]>([]);
-  const [apparatusPBM, setApparatusPBM] = useState<string[]>([]);
-  const [apparatusHBM, setApparatusHBM] = useState<string[]>([]);
+  const [apparatusFXM, setApparatusFXM] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusFXM',
+  });
+  const [apparatusPHM, setApparatusPHM] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusPHM',
+  });
+  const [apparatusSRM, setApparatusSRM] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusSRM',
+  });
+  const [apparatusVTM, setApparatusVTM] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusVTM',
+  });
+  const [apparatusPBM, setApparatusPBM] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusPBM',
+  });
+  const [apparatusHBM, setApparatusHBM] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusHBM',
+  });
 
   // Women's apparatuses
-  const [apparatusVTW, setApparatusVTW] = useState<string[]>([]);
-  const [apparatusUBW, setApparatusUBW] = useState<string[]>([]);
-  const [apparatusBBW, setApparatusBBW] = useState<string[]>([]);
-  const [apparatusFXW, setApparatusFXW] = useState<string[]>([]);
+  const [apparatusVTW, setApparatusVTW] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusVTW',
+  });
+  const [apparatusUBW, setApparatusUBW] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusUBW',
+  });
+  const [apparatusBBW, setApparatusBBW] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusBBW',
+  });
+  const [apparatusFXW, setApparatusFXW] = useLocalStorage<string[]>({
+    defaultValue: [],
+    key: 'apparatusFXW',
+  });
 
   const handleSelectMemberForApparatus =
     (setApparatus: Dispatch<SetStateAction<string[]>>, apparatusTeam: string[]) =>
@@ -48,7 +75,10 @@ export function HomeClient() {
       setApparatus(updatedTeam);
     };
 
-  const [activeTab, setActiveTab] = useState<Gender>('m');
+  const [activeTab, setActiveTab] = useLocalStorage<Gender>({
+    defaultValue: 'm',
+    key: 'activeTab',
+  });
   const selectedTeam = activeTab === 'm' ? teamM : teamW;
   const teamButtonLabel = selectedTeam.length === 5 ? 'Change Team' : 'Select Team';
 
@@ -81,7 +111,20 @@ export function HomeClient() {
       setApparatusBBW([]);
       setApparatusFXW([]);
     }
-  }, [selectedTeam]);
+  }, [
+    selectedTeam,
+    activeTab,
+    setApparatusFXM,
+    setApparatusPHM,
+    setApparatusSRM,
+    setApparatusVTM,
+    setApparatusPBM,
+    setApparatusHBM,
+    setApparatusVTW,
+    setApparatusUBW,
+    setApparatusBBW,
+    setApparatusFXW,
+  ]);
 
   return (
     <>

@@ -1,10 +1,13 @@
 import '@mantine/core/styles.css';
 
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import { theme } from '@/src/theme';
 import type { Metadata } from 'next';
+
+import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+
 import { Providers } from './providers';
+
 import { Navigation } from '@/components';
+import { theme } from '@/src/theme';
 
 export const metadata: Metadata = {
   title: 'UCSAS 2024 Gymnastics Data Challenge',
