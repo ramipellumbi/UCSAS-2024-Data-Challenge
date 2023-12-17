@@ -30,14 +30,23 @@ export function HomeClient() {
 
   return (
     <>
-      <GenderTab activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      <Button
-        onClick={disclosure[1].open}
-        style={{ margin: '10px 0', backgroundColor: '#005f73', color: 'white' }}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '20px',
+          marginBottom: '20px',
+        }}
       >
-        {teamButtonLabel}
-      </Button>
+        <Button
+          onClick={disclosure[1].open}
+          style={{ margin: '10px 0', backgroundColor: '#005f73', color: 'white' }}
+        >
+          {teamButtonLabel}
+        </Button>
+        <GenderTab activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
       <TeamSelectedView selectedTeam={selectedTeam} />
       <TeamSelectionDrawer
         disclosure={disclosure}
