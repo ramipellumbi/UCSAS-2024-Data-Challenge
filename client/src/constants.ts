@@ -2,8 +2,8 @@
  * Apparatuses for gymnastics events for each gender
  */
 export const APPARATUSES = {
-  MEN: ['FX', 'PH', 'SR', 'VT', 'PB', 'HB'],
-  WOMEN: ['VT', 'UB', 'BB', 'FX'],
+  m: ['FX', 'PH', 'SR', 'VT', 'PB', 'HB'],
+  w: ['VT', 'UB', 'BB', 'FX'],
 } as const;
 
 /**
@@ -15,13 +15,10 @@ export const CACHE_KEYS = {
   selectedTeam: 'SELECTED_CACHE',
 } as const;
 
-export const GENDERS = {
-  MEN: 'm',
-  WOMEN: 'w',
-} as const;
-
 /**
  * Useful types for type safety
  */
+
 export type Apparatus = (typeof APPARATUSES)[keyof typeof APPARATUSES][number];
-export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
+export type Apparatuses = typeof APPARATUSES;
+export type Gender = 'm' | 'w';

@@ -1,6 +1,6 @@
 import { Tabs } from '@mantine/core';
 import styles from './GenderTab.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, memo } from 'react';
 import { Gender } from '@/constants';
 
 type GenderTabProps = {
@@ -8,7 +8,7 @@ type GenderTabProps = {
   setActiveTab: Dispatch<SetStateAction<Gender>>;
 };
 
-export function GenderTab({ activeTab, setActiveTab }: GenderTabProps) {
+export const GenderTab = memo(function GenderTab({ activeTab, setActiveTab }: GenderTabProps) {
   return (
     <div className={styles.tabsContainer}>
       <Tabs value={activeTab} onChange={(v) => setActiveTab(v as Gender)}>
@@ -31,4 +31,4 @@ export function GenderTab({ activeTab, setActiveTab }: GenderTabProps) {
       </Tabs>
     </div>
   );
-}
+});

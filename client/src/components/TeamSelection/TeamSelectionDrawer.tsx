@@ -11,7 +11,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 const RANDOM_NAMES = [
   'Rami Pellumbi',
@@ -28,7 +28,7 @@ type TeamSelectionDrawerProps = {
   disclosure: ReturnType<typeof useDisclosure>;
 };
 
-export function TeamSelectionDrawer({
+export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
   selectedTeam,
   setSelectedTeam,
   disclosure,
@@ -118,4 +118,4 @@ export function TeamSelectionDrawer({
       </div>
     </Drawer>
   );
-}
+});

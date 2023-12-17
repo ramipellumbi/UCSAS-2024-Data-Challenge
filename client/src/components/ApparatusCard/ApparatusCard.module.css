@@ -1,0 +1,39 @@
+.apparatusCard {
+  width: calc(33% - 20px); /* Adjust width for three cards per row */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.memberCard {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.memberCardSelected {
+  border: 2px solid #005f73;
+  background-color: #e0fbfc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cardContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .cardContainer {
+    grid-template-columns: 1fr;
+  }
+}

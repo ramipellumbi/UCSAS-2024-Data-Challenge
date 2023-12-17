@@ -1,10 +1,14 @@
 import styles from './TeamSelectedView.module.css'; // Adjust the path according to your file structure
 
+import { memo } from 'react';
+
 type TeamSelectedViewProps = {
   selectedTeam: string[];
 };
 
-export function TeamSelectedView({ selectedTeam }: TeamSelectedViewProps) {
+export const TeamSelectedView = memo(function TeamSelectedView({
+  selectedTeam,
+}: TeamSelectedViewProps) {
   return (
     <div
       style={{
@@ -12,6 +16,7 @@ export function TeamSelectedView({ selectedTeam }: TeamSelectedViewProps) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingBottom: '20px',
       }}
     >
       {selectedTeam.length > 0 && (
@@ -25,4 +30,4 @@ export function TeamSelectedView({ selectedTeam }: TeamSelectedViewProps) {
       )}
     </div>
   );
-}
+});
