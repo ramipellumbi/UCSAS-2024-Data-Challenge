@@ -13,6 +13,8 @@
   bottom: -100px; /* Start off-screen */
   right: 20px;
   z-index: 1000;
+  width: 350px;
+  height: 50px;
   animation: slideUp 0.5s forwards; /* Animation to slide the button up */
   font-size: 1.5em; /* Further increased font size */
   font-weight: bold; /* Bolder font */

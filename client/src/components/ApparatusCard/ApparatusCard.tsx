@@ -1,12 +1,13 @@
 import { memo } from 'react';
 
-import { Text } from '@mantine/core';
+import { Text, Tooltip } from '@mantine/core';
 
 import styles from './ApparatusCard.module.css';
 
 import { Apparatus } from '@/constants';
 
 type ApparatusCardProps = {
+  possibleSelections: string[];
   apparatus: Apparatus;
   team: string[];
   selectedMembers: string[];
@@ -14,6 +15,7 @@ type ApparatusCardProps = {
 };
 
 export const ApparatusCard = memo(function ApparatusCard({
+  possibleSelections,
   apparatus,
   team,
   selectedMembers,
@@ -36,6 +38,7 @@ export const ApparatusCard = memo(function ApparatusCard({
             isComplete={isComplete}
             member={member}
             isSelected={selectedMembers.includes(member)}
+            isClickable={possibleSelections.includes(member)}
             onClick={() => onSelect(member)}
           />
         ))}
@@ -48,6 +51,7 @@ type MemberCardProps = {
   member: string;
   isComplete: boolean;
   isSelected: boolean;
+  isClickable: boolean;
   onClick: () => void;
 };
 
@@ -55,20 +59,43 @@ const MemberCard = memo(function MemberCard({
   member,
   isComplete,
   isSelected,
+  isClickable,
   onClick,
 }: MemberCardProps) {
+  const getTextColor = () => {
+    if (isComplete || !isClickable) {
+      return 'gray';
+    }
+
+    return 'inherit';
+  };
+
+  const getTooltipText = () => {
+    if (isSelected) {
+      return `Unselect ${member}`;
+    }
+
+    if (!isClickable) {
+      return 'This member cannot be selected for this apparatus (no data points)';
+    }
+
+    return `Select ${member}`;
+  };
+
   return (
-    <div
-      className={`${styles.memberCard} ${isSelected ? styles.memberCardSelected : ''}`}
-      onClick={onClick}
-    >
-      <Text
-        style={{
-          color: !isComplete || isSelected ? 'inherit' : 'gray',
-        }}
+    <Tooltip label={getTooltipText()}>
+      <div
+        className={`${styles.memberCard} ${isSelected ? styles.memberCardSelected : ''}`}
+        onClick={isClickable ? onClick : undefined}
       >
-        {member}
-      </Text>
-    </div>
+        <Text
+          style={{
+            color: getTextColor(),
+          }}
+        >
+          {member}
+        </Text>
+      </div>
+    </Tooltip>
   );
 });

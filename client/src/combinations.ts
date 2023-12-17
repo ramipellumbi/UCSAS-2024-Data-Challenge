@@ -8,6 +8,9 @@ export function getCombinations(arr: string[], k: number): string[][] {
   return new Combinations(arr, k).compute().combinations;
 }
 
+/**
+ * Compute all combinations of length k from an array of strings
+ */
 class Combinations {
   private _combinations: string[][];
 
