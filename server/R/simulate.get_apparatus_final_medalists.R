@@ -14,7 +14,8 @@ get_apparatus_final_medalists <- function(simulation_data,
              rank == 2 ~ "Silver",
              rank == 3 ~ "Bronze",
              TRUE ~ "NA"
-           ))
+           )) %>%
+    dplyr::select(name, gender, country, apparatus, rank, medal, predicted_score)
 
   return(medalists)
 }

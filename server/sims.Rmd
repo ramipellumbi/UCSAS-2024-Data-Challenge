@@ -1,15 +1,15 @@
 ```{r}
-source("R/model.R")
+source("server/R/model.R")
 
-source("server/scripts/simulate.get_team_final_qualifiers.R")
-source("server/scripts/simulate.get_team_aa_medalists.R")
+source("server/R/simulate.get_team_final_qualifiers.R")
+source("server/R/simulate.get_team_aa_medalists.R")
 
-source('server/scripts/simulate.get_eligible_individuals_for_aa_final.R')
-source("server/scripts/simulate.get_individual_aa_final_qualifiers.R")
-source("server/scripts/simulate.get_individual_aa_medalists.R")
+source('server/R/simulate.get_eligible_individuals_for_aa_final.R')
+source("server/R/simulate.get_individual_aa_final_qualifiers.R")
+source("server/R/simulate.get_individual_aa_medalists.R")
 
-source("server/scripts/simulate.get_apparatus_final_qualifiers.R")
-source("server/scripts/simulate.get_apparatus_final_medalists.R")
+source("server/R/simulate.get_apparatus_final_qualifiers.R")
+source("server/R/simulate.get_apparatus_final_medalists.R")
 
 df <- readRDS("server/df.rds")
 models <- readRDS("server/models.rds")
@@ -19,11 +19,8 @@ df <- df %>%
 for (gender_t in c("m")) {
   # pick a team of 5 for the US
   for (team_sim in 1:1) {
-    countries_df <- read.csv("server/top_countries.csv")
-    countries <- countries_df[[gender_t]]
-    
     alternates <- read.csv(paste0("server/alt_", gender_t, ".csv"))
-    alternates_df <- df %>% 
+    alternates_df <- df %>%
       filter(name %in% alternates$name) %>%
       group_by(name, gender, country, apparatus) %>%
       summarise(all_avg_d_score = first(all_avg_d_score),
@@ -33,8 +30,8 @@ for (gender_t in c("m")) {
     df_g <- df %>% 
       filter(gender == gender_t)
   
-    filename <- paste0("server/", gender_t, '.csv')
-    non_usa_competitors <- read.csv(filename)
+    filename <- paste0("server/", "team_", gender_t, '.csv')
+    non_usa_team_competitors <- read.csv(filename)
     
     usa_options <- df_g %>%
       filter(country == "USA") %>%
@@ -46,10 +43,8 @@ for (gender_t in c("m")) {
       sample_n(5, replace = FALSE) %>%
       ungroup()
     
-    temp <- non_usa_competitors %>% 
-      filter(country %in% countries)
-    other_options = df_g %>%
-      filter(name %in% temp$name) %>%
+    other_options <- df_g %>%
+      filter(name %in% non_usa_team_competitors$name) %>%
       group_by(name, gender, country, apparatus) %>%
       summarise(all_avg_d_score = first(all_avg_d_score),
                 .groups = "keep") %>%
@@ -57,25 +52,24 @@ for (gender_t in c("m")) {
     
     # sample different pairings of 4 for each apparatus
     for (sample_sim in 1:1) {
+      usa_sample <- usa_options %>%
+        group_by(apparatus) %>%
+        sample_n(4, replace = FALSE) %>%
+        ungroup()
+      other_sample <- other_options %>%
+        group_by(country, name, apparatus, gender) %>%
+        summarise(all_avg_d_score = mean(all_avg_d_score),
+                  .groups = "keep") %>%
+        group_by(country, apparatus, gender) %>%
+        sample_n(4, replace = FALSE) %>%
+        ungroup()
+      country_competitors <- bind_rows(usa_sample, other_sample)
+      
       # run multiple simulations for this pairing
       for (run in 1:1) {
-        usa_sample <- usa_options %>%
-          group_by(apparatus) %>%
-          sample_n(4, replace = FALSE) %>%
-          ungroup()
-        other_sample <- other_options %>%
-          group_by(country, name, apparatus, gender) %>%
-          summarise(all_avg_d_score = mean(all_avg_d_score),
-                    .groups = "keep") %>%
-          group_by(country, apparatus, gender) %>%
-          sample_n(4, replace = FALSE) %>%
-          ungroup()
-        country_competitors <- bind_rows(usa_sample, other_sample)
-        
         # all 96 men and women compete in qualifications - 
         # this is the 36 alternates AND the
       
-        for (score_simulation in c(1:1)) {
           sim_team <- predict_scores_from_models(country_competitors,
                                                  models)
           sim_alternates <- predict_scores_from_models(alternates_df,
@@ -108,7 +102,6 @@ for (gender_t in c("m")) {
           apparatus_final_qualifiers <- get_apparatus_final_qualifiers(bind_rows(sim_team, sim_alternates))
           apparatus_medalists <- get_apparatus_final_medalists(apparatus_final_qualifiers,
                                                                models)
-        }
       }
     }
   }
