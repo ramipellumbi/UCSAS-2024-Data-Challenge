@@ -1,3 +1,4 @@
+import { Box } from '@mantine/core';
 import { Chart as ChartJS, registerables } from 'chart.js';
 ChartJS.register(...registerables);
 import { Bar } from 'react-chartjs-2';
@@ -158,12 +159,26 @@ export function Histogram({
   return (
     <div
       style={{
+        display: 'grid',
+        gridTemplateRows: '8fr 1fr',
+        height: '100%',
+        width: '100%',
         backgroundColor: 'white',
-        marginTop: '5px',
-        marginBottom: '5px',
+        minHeight: '600px',
+        marginBottom: '20px',
       }}
     >
-      <Bar data={chartData} options={newOptions} />
+      <div style={{ overflow: 'hidden' }}>
+        <div
+          style={{
+            backgroundColor: 'white',
+            height: '100%',
+            width: '100%',
+          }}
+        >
+          <Bar data={chartData} options={newOptions} />
+        </div>
+      </div>
     </div>
   );
 }
