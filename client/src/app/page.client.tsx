@@ -1,22 +1,44 @@
 'use client';
 
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-import { Box, Button, LoadingOverlay } from '@mantine/core';
+import { Box, Button, LoadingOverlay, Stepper, Tooltip } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-
-import styles from './Home.module.css';
-
-import { ApparatusCard, GenderTab, TeamSelectedView, TeamSelectionDrawer } from '@/components';
-import { APPARATUSES, Gender } from '@/constants';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+
+import styles from './Home.module.css';
 import { getCombinations } from '../combinations';
+import { DetailsModal } from '../components/DetailsModal/DetailsModal';
+
+import {
+  ApparatusCard,
+  GenderTab,
+  Histogram,
+  SimulationForm,
+  TeamSelectedView,
+  TeamSelectionDrawer,
+} from '@/components';
+import { APPARATUSES, Gender } from '@/constants';
 import { loadJSON } from '@/loaders';
 
 export function HomeClient() {
   const disclosure = useDisclosure(false);
 
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const [simulationCount, setSimulationCount] = useState(50);
+
+  const nextStep = () => setActive((current) => (current < 2 ? current + 1 : current));
+  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
   const [teamM, setTeamM] = useLocalStorage<string[]>({ defaultValue: [], key: 'teamM' });
   const [teamW, setTeamW] = useLocalStorage<string[]>({ defaultValue: [], key: 'teamW' });
   const [activeTab, setActiveTab] = useLocalStorage<Gender>({
@@ -61,14 +83,24 @@ export function HomeClient() {
     key: 'apparatusHBM',
   });
 
-  const apparatusSettersMapMen = {
-    FX: setApparatusFXM,
-    PH: setApparatusPHM,
-    SR: setApparatusSRM,
-    VT: setApparatusVTM,
-    PB: setApparatusPBM,
-    HB: setApparatusHBM,
-  };
+  const apparatusSettersMapMen = useMemo(
+    () => ({
+      FX: setApparatusFXM,
+      PH: setApparatusPHM,
+      SR: setApparatusSRM,
+      VT: setApparatusVTM,
+      PB: setApparatusPBM,
+      HB: setApparatusHBM,
+    }),
+    [
+      setApparatusFXM,
+      setApparatusHBM,
+      setApparatusPBM,
+      setApparatusPHM,
+      setApparatusSRM,
+      setApparatusVTM,
+    ]
+  );
 
   // Women's apparatuses
   const [apparatusVTW, setApparatusVTW] = useLocalStorage<string[]>({
@@ -88,12 +120,15 @@ export function HomeClient() {
     key: 'apparatusFXW',
   });
 
-  const apparatusSettersMapWomen = {
-    VT: setApparatusVTW,
-    UB: setApparatusUBW,
-    BB: setApparatusBBW,
-    FX: setApparatusFXW,
-  };
+  const apparatusSettersMapWomen = useMemo(
+    () => ({
+      VT: setApparatusVTW,
+      UB: setApparatusUBW,
+      BB: setApparatusBBW,
+      FX: setApparatusFXW,
+    }),
+    [setApparatusBBW, setApparatusFXW, setApparatusUBW, setApparatusVTW]
+  );
 
   useEffect(() => {
     const loadPossibleSelections = async () => {
@@ -129,12 +164,13 @@ export function HomeClient() {
     prevActiveTab.current = activeTab;
     prevTeamM.current = teamM;
     prevTeamW.current = teamW;
-  }, [teamM, teamW, activeTab]);
+  }, [teamM, teamW, activeTab, apparatusSettersMapMen, apparatusSettersMapWomen]);
 
   const mutation = useMutation({
     mutationKey: ['simulate'],
     mutationFn: async () => {
       const body: any = {};
+      body['count'] = simulationCount;
       if (activeTab === 'm') {
         body['gender'] = 'm';
         body['team'] = teamM;
@@ -152,9 +188,11 @@ export function HomeClient() {
         body['BB'] = apparatusBBW;
         body['FX'] = apparatusFXW;
       }
-      await axios.post('/simulate', {
+      const response = await axios.post('/simulate', {
         body,
       });
+
+      return response;
     },
   });
 
@@ -186,8 +224,6 @@ export function HomeClient() {
         apparatusUBW.length === 4 &&
         apparatusBBW.length === 4 &&
         apparatusFXW.length === 4;
-
-  const hasSimulationResults = false;
 
   const handleClearAssignments = useCallback(() => {
     const setters = activeTab === 'm' ? apparatusSettersMapMen : apparatusSettersMapWomen;
@@ -229,23 +265,25 @@ export function HomeClient() {
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '20px',
-          marginBottom: '20px',
-        }}
-      >
-        <Button
-          onClick={disclosure[1].open}
-          style={{ margin: '10px 0', backgroundColor: '#005f73', color: 'white' }}
+      {active === 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '20px',
+            marginBottom: '20px',
+          }}
         >
-          {teamButtonLabel}
-        </Button>
-        <GenderTab activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
+          <Button
+            onClick={disclosure[1].open}
+            style={{ margin: '10px 0', backgroundColor: '#005f73', color: 'white' }}
+          >
+            {teamButtonLabel}
+          </Button>
+          <GenderTab activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
+      )}
       <TeamSelectedView selectedTeam={selectedTeam} />
       <TeamSelectionDrawer
         gender={activeTab}
@@ -253,114 +291,198 @@ export function HomeClient() {
         selectedTeam={selectedTeam}
         setSelectedTeam={activeTab === 'm' ? setTeamM : setTeamW}
       />
-      {selectedTeam.length == 5 && (
-        <div
-          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}
-        >
-          <Button
-            style={{ margin: '10px 0', backgroundColor: '#493E80', color: 'white' }}
-            onClick={handleClearAssignments}
-          >
-            Clear Assignments
-          </Button>
-          <Button
-            style={{ margin: '10px 0', backgroundColor: '#005f73', color: 'white' }}
-            onClick={handleRandomAssignments}
-          >
-            Randomly assign team
-          </Button>
-        </div>
-      )}
 
-      {areAllApparatusesComplete && (
+      <Stepper active={active} onStepClick={setActive} allowNextStepsSelect={false}>
+        <Stepper.Step label="Apparatus Assignments" description="">
+          {selectedTeam.length == 5 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '20px',
+              }}
+            >
+              <Button
+                style={{ margin: '10px 0', backgroundColor: '#493E80', color: 'white' }}
+                onClick={handleClearAssignments}
+              >
+                Clear Assignments
+              </Button>
+              <Button
+                style={{ margin: '10px 0', backgroundColor: '#005f73', color: 'white' }}
+                onClick={handleRandomAssignments}
+              >
+                Randomly assign team
+              </Button>
+            </div>
+          )}
+
+          {activeTab === 'm' && teamM.length === 5 && (
+            <div className={styles.apparatusContainer}>
+              <ApparatusCard
+                possibleSelections={validSelections?.['FX.m'] ?? []}
+                apparatus="FX"
+                team={teamM}
+                selectedMembers={apparatusFXM}
+                onSelect={handleSelectMemberForApparatus(setApparatusFXM, apparatusFXM)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['PH.m'] ?? []}
+                apparatus="PH"
+                team={teamM}
+                selectedMembers={apparatusPHM}
+                onSelect={handleSelectMemberForApparatus(setApparatusPHM, apparatusPHM)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['SR.m'] ?? []}
+                apparatus="SR"
+                team={teamM}
+                selectedMembers={apparatusSRM}
+                onSelect={handleSelectMemberForApparatus(setApparatusSRM, apparatusSRM)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['VT.m'] ?? []}
+                apparatus="VT"
+                team={teamM}
+                selectedMembers={apparatusVTM}
+                onSelect={handleSelectMemberForApparatus(setApparatusVTM, apparatusVTM)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['PB.m'] ?? []}
+                apparatus="PB"
+                team={teamM}
+                selectedMembers={apparatusPBM}
+                onSelect={handleSelectMemberForApparatus(setApparatusPBM, apparatusPBM)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['HB.m'] ?? []}
+                apparatus="HB"
+                team={teamM}
+                selectedMembers={apparatusHBM}
+                onSelect={handleSelectMemberForApparatus(setApparatusHBM, apparatusHBM)}
+              />
+            </div>
+          )}
+
+          {activeTab === 'w' && teamW.length === 5 && (
+            <div className={styles.apparatusContainer}>
+              <ApparatusCard
+                possibleSelections={validSelections?.['BB.w'] ?? []}
+                apparatus="BB"
+                team={teamW}
+                selectedMembers={apparatusBBW}
+                onSelect={handleSelectMemberForApparatus(setApparatusBBW, apparatusBBW)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['FX.w'] ?? []}
+                apparatus="FX"
+                team={teamW}
+                selectedMembers={apparatusFXW}
+                onSelect={handleSelectMemberForApparatus(setApparatusFXW, apparatusFXW)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['UB.w'] ?? []}
+                apparatus="UB"
+                team={teamW}
+                selectedMembers={apparatusUBW}
+                onSelect={handleSelectMemberForApparatus(setApparatusUBW, apparatusUBW)}
+              />
+              <ApparatusCard
+                possibleSelections={validSelections?.['VT.w'] ?? []}
+                apparatus="VT"
+                team={teamW}
+                selectedMembers={apparatusVTW}
+                onSelect={handleSelectMemberForApparatus(setApparatusVTW, apparatusVTW)}
+              />
+            </div>
+          )}
+        </Stepper.Step>
+        <Stepper.Step label="Simulation Settings" description="">
+          <SimulationForm
+            gender={activeTab}
+            initialValue={simulationCount}
+            setSlider={setSimulationCount}
+          />
+        </Stepper.Step>
+        <Stepper.Completed>
+          <Box style={{ textAlign: 'center', marginBottom: '100px' }}>
+            <Tooltip label={'View the Team allocations behind these simulations'}>
+              <Button
+                onClick={() => setIsDetailsModalOpen(true)}
+                style={{ marginBottom: '30px', backgroundColor: '#005f73', color: 'white' }}
+              >
+                View Detail
+              </Button>
+            </Tooltip>
+            {mutation?.data?.data?.team_medalists && (
+              <Histogram key={'TEAM'} data={mutation?.data?.data?.team_medalists} type={'team'} />
+            )}
+            {mutation?.data?.data?.individual_aa_medalists && (
+              <Histogram
+                key={'aa'}
+                data={mutation?.data?.data?.individual_aa_medalists}
+                type={'individual'}
+              />
+            )}
+            {APPARATUSES[activeTab].map((apparatus) => (
+              <Histogram
+                key={apparatus}
+                data={mutation?.data?.data?.apparatus_medalists.filter(
+                  (v: any) => v.apparatus === apparatus
+                )}
+                type={'apparatus'}
+                title={apparatus}
+              />
+            ))}
+            {mutation?.data?.data?.sample_records && (
+              <DetailsModal
+                open={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                data={mutation?.data?.data?.sample_records}
+              />
+            )}
+          </Box>
+        </Stepper.Completed>
+      </Stepper>
+
+      {active !== 0 && !isDetailsModalOpen && (
         <Button
-          className={styles.floatingButton}
-          onClick={async () => {
-            await mutation.mutateAsync();
+          disabled={mutation.isPending}
+          className={styles.floatingButtonLeft}
+          onClick={() => {
+            prevStep();
           }}
         >
-          {hasSimulationResults ? 'View Results' : 'Simulate'}
+          Previous Step
         </Button>
       )}
-
-      {activeTab === 'm' && teamM.length === 5 && (
-        <div className={styles.apparatusContainer}>
-          <ApparatusCard
-            possibleSelections={validSelections?.['FX.m'] ?? []}
-            apparatus="FX"
-            team={teamM}
-            selectedMembers={apparatusFXM}
-            onSelect={handleSelectMemberForApparatus(setApparatusFXM, apparatusFXM)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['PH.m'] ?? []}
-            apparatus="PH"
-            team={teamM}
-            selectedMembers={apparatusPHM}
-            onSelect={handleSelectMemberForApparatus(setApparatusPHM, apparatusPHM)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['SR.m'] ?? []}
-            apparatus="SR"
-            team={teamM}
-            selectedMembers={apparatusSRM}
-            onSelect={handleSelectMemberForApparatus(setApparatusSRM, apparatusSRM)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['VT.m'] ?? []}
-            apparatus="VT"
-            team={teamM}
-            selectedMembers={apparatusVTM}
-            onSelect={handleSelectMemberForApparatus(setApparatusVTM, apparatusVTM)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['PB.m'] ?? []}
-            apparatus="PB"
-            team={teamM}
-            selectedMembers={apparatusPBM}
-            onSelect={handleSelectMemberForApparatus(setApparatusPBM, apparatusPBM)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['HB.m'] ?? []}
-            apparatus="HB"
-            team={teamM}
-            selectedMembers={apparatusHBM}
-            onSelect={handleSelectMemberForApparatus(setApparatusHBM, apparatusHBM)}
-          />
-        </div>
+      {areAllApparatusesComplete && active === 0 && (
+        <Button
+          disabled={mutation.isPending}
+          className={styles.floatingButton}
+          onClick={() => {
+            nextStep();
+          }}
+        >
+          Next Step
+        </Button>
       )}
-
-      {activeTab === 'w' && teamW.length === 5 && (
-        <div className={styles.apparatusContainer}>
-          <ApparatusCard
-            possibleSelections={validSelections?.['BB.w'] ?? []}
-            apparatus="BB"
-            team={teamW}
-            selectedMembers={apparatusBBW}
-            onSelect={handleSelectMemberForApparatus(setApparatusBBW, apparatusBBW)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['FX.w'] ?? []}
-            apparatus="FX"
-            team={teamW}
-            selectedMembers={apparatusFXW}
-            onSelect={handleSelectMemberForApparatus(setApparatusFXW, apparatusFXW)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['UB.w'] ?? []}
-            apparatus="UB"
-            team={teamW}
-            selectedMembers={apparatusUBW}
-            onSelect={handleSelectMemberForApparatus(setApparatusUBW, apparatusUBW)}
-          />
-          <ApparatusCard
-            possibleSelections={validSelections?.['VT.w'] ?? []}
-            apparatus="VT"
-            team={teamW}
-            selectedMembers={apparatusVTW}
-            onSelect={handleSelectMemberForApparatus(setApparatusVTW, apparatusVTW)}
-          />
-        </div>
+      {areAllApparatusesComplete && active === 1 && (
+        <Button
+          disabled={mutation.isPending}
+          className={styles.floatingButton}
+          onClick={async () => {
+            try {
+              await mutation.mutateAsync();
+              nextStep();
+            } catch {
+              alert('Something went wrong');
+            }
+          }}
+        >
+          Run Simulation
+        </Button>
       )}
     </Box>
   );

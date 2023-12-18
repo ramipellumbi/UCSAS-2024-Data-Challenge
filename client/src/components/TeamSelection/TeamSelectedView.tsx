@@ -1,5 +1,7 @@
 import { memo } from 'react';
 
+import { Text } from '@mantine/core';
+
 import styles from './TeamSelectedView.module.css';
 
 type TeamSelectedViewProps = {
@@ -19,9 +21,12 @@ export const TeamSelectedView = memo(function TeamSelectedView({
         paddingBottom: '20px',
       }}
     >
+      <Text size="lg" fw={500}>
+        {selectedTeam.length === 5 ? 'Team USA' : 'Select a Team of 5'}
+      </Text>
       {selectedTeam.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '20px' }}>
-          {selectedTeam.map((member) => (
+          {selectedTeam.sort().map((member) => (
             <div key={member} className={styles.teamMemberCard}>
               <p style={{ fontWeight: 'bold', margin: 0 }}>{member}</p>
             </div>
