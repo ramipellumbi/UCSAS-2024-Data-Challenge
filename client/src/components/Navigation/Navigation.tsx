@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { rem, Title, Tooltip, UnstyledButton } from '@mantine/core';
 import { IconDirectionHorizontal, IconEaseInOut } from '@tabler/icons-react';
@@ -46,6 +46,11 @@ export function Navigation({ children }: { children: React.ReactNode }) {
     [setActive, active]
   );
 
+  // useEffect to update active link on path change
+  useEffect(() => {
+    setActive(pathName === '/explorer' ? 'Simulation Explorer' : 'Run Simulation');
+  }, [pathName]);
+
   return (
     <div className={classes.navbar}>
       <div className={classes.aside}>
@@ -54,7 +59,8 @@ export function Navigation({ children }: { children: React.ReactNode }) {
       </div>
       <div className={classes.main}>
         <Title order={4} className={classes.title}>
-          UCSAS 2024 Gymnastics Data Challenge
+          UCSAS 2024 Gymnastics Data Challenge -{' '}
+          {active === 'Run Simulation' ? 'Simulation Runner' : 'Simulation Explorer'}
         </Title>
         <div className={classes.mainContent}>{children}</div>
       </div>
