@@ -177,25 +177,30 @@ function(gender_t, team) {
     summarize(competitors = list(name)) %>%
     filter(sapply(competitors, function(x) setequal(x, team)))
   
+  total_runs_with_team <- length(team_usa_f$run)
+  
   usa_samples_f <- usa_samples %>%
     filter(run %in% team_usa_f$run)
   other_samples_f <- other_samples %>%
     filter(run %in% team_usa_f$run)
   
+  
+  total_samples_per_run_f <- length(unique(usa_samples_f$sample))
+  
 
   team_medalists_f <- team_medalists %>%
-    filter(run %in% team_usa_f$run) %>%
+    filter(run %in% team_usa_f$run, gender == gender_t) %>%
     group_by(country, medal, run, sample) %>%
     summarise(count = n(),
               .groups = "keep")
   individual_aa_medalists_f <- individual_aa_medalists %>%
-    filter(run %in% team_usa_f$run) %>%
-    group_by(name, medal, run, sample) %>%
+    filter(run %in% team_usa_f$run, gender == gender_t) %>%
+    group_by(name, medal, country, run, sample) %>%
     summarise(count = n(),
               .groups = "keep")
   apparatus_medalists_f <- apparatus_medalists %>%
-    filter(run %in% team_usa_f$run) %>%
-    group_by(name, apparatus, medal, run, sample) %>%
+    filter(run %in% team_usa_f$run, gender == gender_t) %>%
+    group_by(name, country, apparatus, medal, run, sample) %>%
     summarise(count = n(),
               .groups = "keep")
   
@@ -203,7 +208,9 @@ function(gender_t, team) {
        other_samples = other_samples_f,
        team_medalists = team_medalists_f,
        individual_aa_medalists = individual_aa_medalists_f,
-       apparatus_medalists = apparatus_medalists_f)
+       apparatus_medalists = apparatus_medalists_f,
+       total_samples_per_run = total_samples_per_run_f, 
+       total_runs_with_team = total_runs_with_team)
 }
 
 #* Get potential 

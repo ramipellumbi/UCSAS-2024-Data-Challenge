@@ -7,13 +7,22 @@ type Data = {
   medal: string;
   name: string;
   apparatus: string;
+  count?: number;
+  run?: number;
+  sample?: number;
 };
 
 const processTeamData = (data: Data[]) => {
-  const teamData = data.reduce((acc, { country, medal }) => {
+  const teamData = data.reduce((acc, { country, medal, count }) => {
     if (!acc[country]) {
       acc[country] = { Gold: 0, Silver: 0, Bronze: 0 };
     }
+
+    if (count) {
+      acc[country][medal] += count;
+      return acc;
+    }
+
     acc[country][medal]++;
     return acc;
   }, Object.create(null));
@@ -21,11 +30,17 @@ const processTeamData = (data: Data[]) => {
 };
 
 const processIndividualData = (data: Data[]) => {
-  const teamData = data.reduce((acc, { name, medal, country }) => {
+  const teamData = data.reduce((acc, { name, medal, country, count }) => {
     const key = `${name} (${country})`;
     if (!acc[key]) {
       acc[key] = { Gold: 0, Silver: 0, Bronze: 0 };
     }
+
+    if (count) {
+      acc[key][medal] += count;
+      return acc;
+    }
+
     acc[key][medal]++;
     return acc;
   }, Object.create(null));
@@ -33,11 +48,17 @@ const processIndividualData = (data: Data[]) => {
 };
 
 const processApparatusData = (data: Data[]) => {
-  const teamData = data.reduce((acc, { name, country, medal }) => {
+  const teamData = data.reduce((acc, { name, country, medal, count }) => {
     const key = `${name} (${country})`;
     if (!acc[key]) {
       acc[key] = { Gold: 0, Silver: 0, Bronze: 0 };
     }
+
+    if (count) {
+      acc[key][medal] += count;
+      return acc;
+    }
+
     acc[key][medal]++;
     return acc;
   }, Object.create(null));

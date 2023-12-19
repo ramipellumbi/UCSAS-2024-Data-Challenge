@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 import {
   Box,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure, useLocalStorage } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 
 import { Gender } from '@/constants';
 import { loadJSON } from '@/loaders';
@@ -46,7 +46,7 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
     };
 
     loadNamesJSON();
-  }, [setNames, gender]);
+  }, [setNames, gender, selectedTeam]);
 
   const handleBoxClick = useCallback(
     (name: string) => {

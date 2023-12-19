@@ -11,7 +11,7 @@ type ApparatusCardProps = {
   apparatus: Apparatus;
   team: string[];
   selectedMembers: string[];
-  onSelect: (member: string) => void;
+  onSelect?: (member: string) => void;
 };
 
 export const ApparatusCard = memo(function ApparatusCard({
@@ -39,7 +39,7 @@ export const ApparatusCard = memo(function ApparatusCard({
             member={member}
             isSelected={selectedMembers.includes(member)}
             isClickable={possibleSelections.includes(member)}
-            onClick={() => onSelect(member)}
+            onClick={onSelect ? () => onSelect(member) : undefined}
           />
         ))}
       </div>
@@ -52,7 +52,7 @@ type MemberCardProps = {
   isComplete: boolean;
   isSelected: boolean;
   isClickable: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 const MemberCard = memo(function MemberCard({
@@ -75,6 +75,10 @@ const MemberCard = memo(function MemberCard({
   };
 
   const getTooltipText = () => {
+    if (!onClick) {
+      return 'This is a simulation review, data is not interactable.';
+    }
+
     if (isSelected) {
       return `Unselect ${member}`;
     }
@@ -90,7 +94,7 @@ const MemberCard = memo(function MemberCard({
     <Tooltip label={getTooltipText()}>
       <div
         className={`${styles.memberCard} ${isSelected ? styles.memberCardSelected : ''}`}
-        onClick={isClickable ? onClick : undefined}
+        onClick={isClickable && onClick ? onClick : undefined}
       >
         <Text
           style={{
