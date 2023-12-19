@@ -35,7 +35,10 @@ export function HomeClient() {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const [simulationCount, setSimulationCount] = useState(50);
+  const [simulationCount, setSimulationCount] = useLocalStorage<number>({
+    defaultValue: 50,
+    key: 'simulationCount',
+  });
 
   const nextStep = () => setActive((current) => (current < 2 ? current + 1 : current));
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
