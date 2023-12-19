@@ -1,4 +1,3 @@
-import { Box } from '@mantine/core';
 import { Chart as ChartJS, registerables } from 'chart.js';
 ChartJS.register(...registerables);
 import { Bar } from 'react-chartjs-2';
