@@ -1,10 +1,9 @@
-source("./R/model.R")
-
 # The individual all around medalists are chosen by selecting the top 3
 # summed scores of all events
 get_individual_aa_medalists <- function(simulation_data,
                                         individual_final_qualifiers,
-                                        lm_models) {
+                                        lm_models,
+                                        predict_scores_from_models) {
   predictions <- predict_scores_from_models(simulation_data, lm_models)
   medalists <- predictions %>%
     group_by(name, country) %>%

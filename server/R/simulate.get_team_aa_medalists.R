@@ -1,14 +1,11 @@
-source("./R/model.R")
-
 # In the team all-around, all athletes' scores from the qualifying
 # round are thrown out.
 # The medalists are determined by the sum of the 3 scores on each apparatus.
 # Any 3 of the 5 on the team can compete on each apparatus in the finals.
 get_team_aa_medalists <- function(qualifier_team_sim,
                                   team_qualifiers,
-                                  lm_models) {
-
-
+                                  lm_models,
+                                  predict_scores_from_models) {
   countries <- team_qualifiers %>%
     pull(country)
 
