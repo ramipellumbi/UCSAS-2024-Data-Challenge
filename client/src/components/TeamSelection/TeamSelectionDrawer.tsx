@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   Box,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 
 import { Gender } from '@/constants';
 import { loadJSON } from '@/loaders';
@@ -39,13 +39,12 @@ export const TeamSelectionDrawer = memo(function TeamSelectionDrawer({
   useEffect(() => {
     const loadNamesJSON = async () => {
       const json = await loadJSON('usa.json');
-      const names = processJSON(json);
-      const namesForGender = names[gender];
-
+      const namesObj = processJSON(json);
+      const namesForGender = namesObj[gender];
+      setInternalTeamState(selectedTeam);
       setNames(namesForGender);
     };
 
-    setInternalTeamState([]);
     loadNamesJSON();
   }, [setNames, gender]);
 
