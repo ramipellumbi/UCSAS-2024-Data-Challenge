@@ -16,12 +16,10 @@
     "axios": "^1.6.2",
     "chart.js": "^4.4.1",
     "next": "14.0.4",
-    "papaparse": "^5.4.1",
     "qs": "^6.11.2",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18",
-    "react-sortable-hoc": "^2.0.0"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",
