@@ -13,9 +13,9 @@
 
 library(tidyverse)
 
-source("R/data.R")
-source("R/model.R")
-source("R/utilities.R")
+source("server/R/data.R")
+source("server/R/model.R")
+source("server/R/utilities.R")
 
 na_pad <- function(x, len) {
   x[1:len]
