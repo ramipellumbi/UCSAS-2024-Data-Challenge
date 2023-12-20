@@ -207,7 +207,7 @@ results <- results <- lapply(c("m", "w"), function(gender_t) {
            usa_sample = usa_sample %>% dplyr::select(name, apparatus, gender, run, sample),
            other_sample = other_sample %>% dplyr::select(name, apparatus, country, gender, run, sample))
     }
-    results_filename <- paste0("simulation_results/results_team_sim_", gender_t, "_", team_sim, ".rds")
+    results_filename <- paste0("server/simulation_results/results_team_sim_", gender_t, "_", team_sim, ".rds")
     save_results(list(team_sim_results = sample_results,
                       usa_team = usa_options %>% dplyr::select(name, run, gender)),
                  results_filename)
