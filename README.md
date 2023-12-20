@@ -40,7 +40,7 @@ A key decision was made to include all northern ireland athletes as part of NIR 
 
 ## Modeling
 
-The modeling is done in [`server/model.R`](server/model.R). A linear
+The modeling is done in [`server/R/model.R`](server/R/model.R). A linear
 regression model is fit with the following formula on each (apparatus, gender) pair:
 
 ```{r}
