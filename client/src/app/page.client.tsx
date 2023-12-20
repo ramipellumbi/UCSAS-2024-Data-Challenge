@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 
-import { Box, Button, LoadingOverlay, Stepper, Tooltip } from '@mantine/core';
+import { Box, Button, Container, LoadingOverlay, Stepper, Tooltip } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -409,12 +409,9 @@ export function HomeClient() {
           />
         </Stepper.Step>
         <Stepper.Completed>
-          <Box style={{ textAlign: 'center', marginBottom: '100px' }}>
+          <Box style={{ textAlign: 'center', marginBottom: '100px', width: '100%' }}>
             <Tooltip label={'View the Team allocations behind these simulations'}>
-              <Button
-                onClick={() => setIsDetailsModalOpen(true)}
-                style={{ marginBottom: '30px', backgroundColor: '#005f73', color: 'white' }}
-              >
+              <Button onClick={() => setIsDetailsModalOpen(true)} className={styles.floatingButton}>
                 View Detail
               </Button>
             </Tooltip>
@@ -443,6 +440,7 @@ export function HomeClient() {
                 open={isDetailsModalOpen}
                 onClose={() => setIsDetailsModalOpen(false)}
                 data={mutation?.data?.data?.sample_records}
+                teams={mutation?.data?.data?.other_options}
               />
             )}
           </Box>

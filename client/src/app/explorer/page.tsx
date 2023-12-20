@@ -23,6 +23,10 @@ import { Apparatus, APPARATUSES, Gender } from '@/constants';
 const fetchData = async (gender: Gender, team: string[]) => {
   const response = await axios.get<{
     usa_samples: { name: string; apparatus: string; gender: string; run: number; sample: number }[];
+    other_options: {
+      name: string;
+      country: string;
+    }[];
     other_samples: {
       name: string;
       apparatus: string;
@@ -128,8 +132,6 @@ export default function Explorer() {
     return v.run === activeRun && v.sample === activeSample;
   });
 
-  console.log(otherSamples);
-
   return (
     <Box>
       <LoadingOverlay
@@ -206,8 +208,9 @@ export default function Explorer() {
             </>
           )}
 
-          {data?.other_samples && (
+          {data?.other_samples && data?.other_options && (
             <DetailsModal
+              teams={data?.other_options as any}
               open={isDetailsModalOpen}
               onClose={() => setIsDetailsModalOpen(false)}
               data={data?.other_samples.filter(

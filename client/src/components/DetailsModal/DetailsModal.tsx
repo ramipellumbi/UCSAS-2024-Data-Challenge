@@ -1,13 +1,17 @@
 import { Accordion, Box, Group, Modal, Text } from '@mantine/core';
+import { ApparatusCard } from '..';
+import { Apparatus } from '@/constants';
 
 export function DetailsModal({
   open,
   onClose,
   data,
+  teams,
 }: {
   open: boolean;
   onClose: () => void;
   data: Data[];
+  teams: Data[];
 }) {
   return (
     <Modal
@@ -17,13 +21,21 @@ export function DetailsModal({
       size="xl"
       style={{ maxWidth: 1000 }}
     >
-      <NestedAccordion data={data} />
+      <NestedAccordion data={data} teams={teams} />
     </Modal>
   );
 }
 
-const NestedAccordion = ({ data }: { data: Data[] }) => {
+const NestedAccordion = ({ data, teams }: { data: Data[]; teams: Data[] }) => {
   const processedData = processData(data);
+
+  const teamsByCountry = teams.reduce((acc, { name, country }) => {
+    if (!acc[country]) {
+      acc[country] = [];
+    }
+    acc[country].push(name);
+    return acc;
+  }, Object.create(null));
 
   return (
     <Accordion multiple>
@@ -31,25 +43,15 @@ const NestedAccordion = ({ data }: { data: Data[] }) => {
         <Accordion.Item value={country} key={country}>
           <Accordion.Control>{country}</Accordion.Control>
           <Accordion.Panel>
-            <Accordion multiple>
-              {Object.entries(apparatuses).map(([apparatus, names]) => (
-                <Accordion.Item value={apparatus} key={apparatus}>
-                  <Accordion.Control>{apparatus}</Accordion.Control>
-                  <Accordion.Panel>
-                    <Group>
-                      {names.map((name, index) => (
-                        <Box
-                          key={index}
-                          style={{ padding: '5px', '&:hover': { backgroundColor: '#f5f5f5' } }}
-                        >
-                          <Text fw={500}>{name}</Text>
-                        </Box>
-                      ))}
-                    </Group>
-                  </Accordion.Panel>
-                </Accordion.Item>
-              ))}
-            </Accordion>
+            {Object.entries(apparatuses).map(([apparatus, names]) => (
+              <ApparatusCard
+                key={apparatus}
+                possibleSelections={names}
+                apparatus={apparatus as Apparatus}
+                team={teamsByCountry[country]}
+                selectedMembers={names}
+              />
+            ))}
           </Accordion.Panel>
         </Accordion.Item>
       ))}

@@ -1,5 +1,5 @@
 .apparatusCard {
-  width: calc(50% - 20px);
+  width: '48%';
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;

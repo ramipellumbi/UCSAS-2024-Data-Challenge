@@ -69,9 +69,9 @@ function(req) {
   
   # the 36 alternates
   alternates_df <- alternates[[gender_t]]
-  
-  # the 55 non usa members as part of a team
-  non_usa_team_competitors <- non_usa_team[[gender_t]]
+  # the 55 non usa team people
+  other_options <- non_usa_team[[gender_t]]
+  print(other_options)
   
   # get the 5 USA people & their data
   usa_competitors <- body$team
@@ -93,13 +93,6 @@ function(req) {
     
     usa_options <- bind_rows(usa_options, df_temp)
   }
-
-  other_options <- df_g %>%
-    filter(name %in% non_usa_team_competitors$name) %>%
-    group_by(name, gender, country, apparatus) %>%
-    summarise(all_avg_d_score = first(all_avg_d_score),
-              .groups = "keep") %>%
-    ungroup()
   
   other_sample <- other_options %>%
     group_by(country, name, apparatus, gender) %>%
@@ -162,6 +155,7 @@ function(req) {
     team_medalists = results[[1]],
     individual_aa_medalists = results[[2]],
     apparatus_medalists = results[[3]],
+    other_options = other_options %>% distinct(name, country),
     sample_records = sample_records
   ))
 }
@@ -184,7 +178,7 @@ function(gender_t, team) {
   other_samples_f <- other_samples %>%
     filter(run %in% team_usa_f$run)
   
-  
+  other_options <- non_usa_team[[gender_t]]
   total_samples_per_run_f <- length(unique(usa_samples_f$sample))
   
 
@@ -207,14 +201,12 @@ function(gender_t, team) {
   list(usa_samples = usa_samples_f,
        other_samples = other_samples_f,
        team_medalists = team_medalists_f,
+       other_options = other_options %>% distinct(name, country),
        individual_aa_medalists = individual_aa_medalists_f,
        apparatus_medalists = apparatus_medalists_f,
        total_samples_per_run = total_samples_per_run_f, 
        total_runs_with_team = total_runs_with_team)
 }
-
-#* Get potential 
-function(gender_t)
 
 #* @plumber
 function(pr) {

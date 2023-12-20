@@ -29,7 +29,7 @@ export function SimulationForm({ initialValue, setSlider, gender }: SimulationFo
 
   return (
     <Paper shadow="sm" radius="md" p="lg" style={{ maxWidth: 500, margin: '10px auto' }}>
-      <Text size="lg" fw={500} mb="md">
+      <Text size="lg" fw={500} mb="xl">
         Simulation Settings
       </Text>
       <Box mb="md">
@@ -45,7 +45,7 @@ export function SimulationForm({ initialValue, setSlider, gender }: SimulationFo
           Number of Simulations: <b>{simulationCount}</b>
         </Text>
         <Text mt={5} size="sm" c={'gray'}>
-          10 simulations takes about 15 seconds.
+          50 simulations takes about 1 minute.
         </Text>
       </Box>
 
