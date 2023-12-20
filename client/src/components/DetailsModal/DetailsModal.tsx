@@ -1,5 +1,7 @@
-import { Accordion, Box, Group, Modal, Text } from '@mantine/core';
+import { Accordion, Modal } from '@mantine/core';
+
 import { ApparatusCard } from '..';
+
 import { Apparatus } from '@/constants';
 
 export function DetailsModal({

@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 
-import { Box, Button, Container, LoadingOverlay, Stepper, Tooltip } from '@mantine/core';
+import { Box, Button, LoadingOverlay, Stepper, Tooltip } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
