@@ -18,7 +18,8 @@ The repostitory includes preprocessing so this step may be omitted.
 
 ## Getting Started
 
-- To run the API, open the project in RStudio, open [`server/api.R`](./api.R), and click the "Run API" button in the top right.
+- To run the API, open the project in RStudio, open [`server/api.R`](./api.R), and click the "Run API" button in the top right. The server loads an in memory
+  database of processed data and models and exposes an API for running simulations. These files are located in [`server/processed_data/`](./processed_data/).
 - To run simulations in an isolated setting, open the project in RStudio, open [`server/run_simulations.R`](./run_simulations.R), and source the file.
 - To process the results of simulations run in an isolated setting, open the project in RStudio, open [`server/process_simulations.R`](./process_simulations.R), and source the file.
 
