@@ -32,15 +32,15 @@ In the high-stakes realm of Olympic gymnastics, selecting the optimal team
 composition is crucial for national success. This study presents a 
 sophisticated system designed to assist Team USA in formulating their Men's 
 and Women's Artistic Gymnastics teams for the Paris 2024 Olympics. Addressing 
-the complex dynamics of Olympic competition, our system employs a novel blend 
+the complex dynamics of Olympic competition, our system employs a blend 
 of statistical modeling and advanced application design. 
 At its core, the system utilizes linear regression models tailored 
 to each gender-apparatus pair, predicting athletes' execution scores (\texttt{e\_score}) 
 based on their difficulty scores (\texttt{d\_score}) and \texttt{name}. 
 This modeling approach leverages data from the USCAS 2024 Gymnastics Data 
 Challenge, ensuring robust and relevant insights. Notably, 
-the \texttt{d\_score} represents a constant feature for an athlete on a given 
-apparatus, allowing for precise predictions of \texttt{e\_score}.
+the \texttt{d\_score} is used as a constant feature for an athlete on a given 
+apparatus, allowing for better model performance on the prediction \texttt{e\_score}.
 The performance of these models is acceptable, explaining 
 reasonable amounts of the variance for gender-apparatus pairs. Model efficacy is 
 achieved through meticulous data processing and model tuning.
@@ -49,7 +49,7 @@ conducts parallel Monte Carlo simulations of the Olympic events. These simulatio
 project a range of outcomes, offering medal counts for team medals, 
 individual all-arounds, and apparatus-specific competitions.
 
-\section{Problem Statement}
+\section{Introduction}
 The difficulty in selecting the optimal team composition for the Olympics 
 is a common theme across many sports. In gymnastics, this challenge is 
 accentuated by the complex dynamics of Olympic competition. Each team present 
@@ -96,7 +96,7 @@ consider the four assumptions of the linear regression model $Y + X\beta + \epsi
     \item Linearity: The relationship between $X$ and the mean of $Y$ is linear.
     \item Independence: Observations are independent of each other.
     \item Homoscedasticity: The variance of residuals is the same for any value of $X$.
-    \item Normality: For a fixed value of $x$, $y$ is normally distributed.
+    \item Normality: For a fixed value of $X$, $Y$ is normally distributed.
 \end{enumerate}
 
 \subsubsection{Linearity}
@@ -164,7 +164,7 @@ alternates that have been announced, they are included in future simulations.
 \section{Modeling}\label{sec:modeling}
 
 \subsection{Model Selection}
-The linear model $Y + X\beta + \epsilon$ was chosen for its simplicity and interpretability. 
+The linear model $Y = X\beta + \epsilon$ was chosen for its simplicity and interpretability. 
 The model is easy to understand and explain, which is important for a system that is
 intended to be used by coaches and decision-makers. Moreover, the model is easy to
 implement and computationally efficient for simulations. The exact model formula used 
@@ -204,7 +204,7 @@ have acceptable performance.
 
 We explore the simulation strategy. The only fixed competitors to the competition 
 are the named competitors qualifying via criterias 4-7. For the non USA qualifying teams, 
-we select the top 5 all around predicted score sums as the team of 5. For example, 
+we select the top 5 all around predicted scores for a country as the team of 5. For example, 
 we run one round of our model for each country, and then sum up the predicted scores 
 for each individual across all apparatuses. The top 5 for that country are selected to 
 be the team of 5 for that country. The top 5 for team USA is omitted as this 
@@ -214,7 +214,7 @@ is controlled via the simulations.
 
 \noindent There are three levels to simulations: team USA assignment, apparatus allocations, and number of simulations to run. 
 For each team of 5 for team USA, we randomly assign groups of 4 to each apparatus for each country. For these fixed allocations, 
-we run multiple simulations to obtain a medal count. The medal count is determined according to the Olympic rules for progression 
+we run multiple simulations to obtain a medal count distribution. The medal count is determined according to the Olympic rules for progression 
 in the competition. For example, the top 8 teams in the team all around competition advance to the team finals. The top 24 
 individuals in the individual all around competition advance to the individual all around finals, with a maximum of two per country, etc.
 
@@ -289,6 +289,13 @@ to other teams and see how they stack up.
 The simulation explorer runs entirely similar to the simulation runner, except that the user
 is able to explore simulations that have already been run via the \texttt{run\_simulations.R} script in the server. This 
 process is detailed in the repository.
+
+\subsubsection{Implications}
+The system offers a data-driven approach to team selection, allowing coaches and decision-makers to make informed choices. 
+The idea was not to provide recommendations, it was to provide a tool to non data scientists to let them answer 
+their own questions. The user experience is designed to be simple and intuitive, allowing for easy exploration of
+different team compositions and outcomes. The choice of bar charts for the results was intentional, as it allows
+for easy comparison of different teams and individuals across a variety of simulation.
 
 \section{Conclusion}\label{sec:conclusion}
 This report has presented a comprehensive system for optimizing Team USA's 

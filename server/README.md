@@ -21,7 +21,8 @@ The repostitory includes preprocessing so this step may be omitted.
 - To run the API, open the project in RStudio, open [`server/api.R`](./api.R), and click the "Run API" button in the top right. The server loads an in memory
   database of processed data and models and exposes an API for running simulations. These files are located in [`server/processed_data/`](./processed_data/).
 - To run simulations in an isolated setting, open the project in RStudio, open [`server/run_simulations.R`](./run_simulations.R), and source the file.
-- To process the results of simulations run in an isolated setting, open the project in RStudio, open [`server/process_simulations.R`](./process_simulations.R), and source the file.
+- To process the results of simulations run in an isolated setting, open the project in RStudio, open [`server/process_simulations.R`](./process_simulations.R), and source the file. This
+  creates a database like format of RDS files, with appropriate relationship constraints for efficient querying.
 
 ## API
 
@@ -45,7 +46,7 @@ Explore all simulation results for a specified team of 5 for a given gender.
 - [`server/api-data-load.R`](./api-data-load.R) contains code for loading data used by the API endpoints (output from [`server/R/script.prepare_data_and_models.R`](./R/script.prepare_data_and_models.R)).
 - [`server/R/`](./R/) contains the R code for data preprocessing, model training, utility functions, and simulation round logic in [`data.R`](./R/data.R), [`model.R`](./R/model.R), [`utilities.R`](./R/utilities.R), and the remaining files, respectively.
 - [`server/run_simulations.R`](./run_simulations.R) is a script for running simulations in an isolated setting.
-- [`server/process_simulations.R`](./process_simulations.R) is a script for processing the results of simulations into a database format for the API.
+- [`server/process_simulations.R`](./process_simulations.R) is a script for processing the results of simulations into a database format for the `/explore` API route.
 
 ## Outputs
 
