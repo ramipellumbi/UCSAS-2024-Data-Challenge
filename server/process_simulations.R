@@ -2,7 +2,7 @@
 pattern <- ".*_(\\d+)\\.rds$"
 
 # read all files in directory `simulation_results`
-files <- list.files("./simulation_results", full.names = TRUE)
+files <- list.files("./server/simulation_results", full.names = TRUE)
 # filter for .rds only
 files <- files[grepl(pattern, files)]
 
