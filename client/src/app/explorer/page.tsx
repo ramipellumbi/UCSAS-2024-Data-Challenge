@@ -193,6 +193,7 @@ export default function Explorer() {
 
           {data?.other_samples && data?.other_options && (
             <DetailsModal
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               teams={data?.other_options as any}
               open={isDetailsModalOpen}
               onClose={() => setIsDetailsModalOpen(false)}
@@ -260,9 +261,11 @@ export default function Explorer() {
           </Tooltip>
 
           {individualAAMedalists && individualAAMedalists.length > 0 && (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             <Histogram data={individualAAMedalists as any} type={'individual'} />
           )}
           {teamMedalists && teamMedalists.length > 0 && (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             <Histogram data={teamMedalists as any} type={'team'} />
           )}
           {apparatusMedalists &&
@@ -270,6 +273,7 @@ export default function Explorer() {
             APPARATUSES[activeTab].map((apparatus) => (
               <Histogram
                 key={apparatus}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 data={apparatusMedalists.filter((v) => v.apparatus === apparatus) as any}
                 type={'apparatus'}
                 title={apparatus}

@@ -172,6 +172,7 @@ export function HomeClient() {
   const mutation = useMutation({
     mutationKey: ['simulate'],
     mutationFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const body: any = {};
       body['count'] = simulationCount;
       if (activeTab === 'm') {
@@ -429,6 +430,7 @@ export function HomeClient() {
               <Histogram
                 key={apparatus}
                 data={mutation?.data?.data?.apparatus_medalists.filter(
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (v: any) => v.apparatus === apparatus
                 )}
                 type={'apparatus'}
@@ -498,6 +500,7 @@ const processJSON = (json: unknown, key: string): string[] => {
     throw new Error('Invalid JSON');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const names = (json as any)[key] as string[];
   if (!Array.isArray(names)) {
     throw new Error('Invalid JSON');
