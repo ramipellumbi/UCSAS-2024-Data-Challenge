@@ -1,36 +1,65 @@
+# Client
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Prerequisites
+
+You must have the following installed:
+
+- [Node.js](https://nodejs.org/en/)
+- [npm](https://www.npmjs.com/)
+
+Morover, the following must be true:
+
+- The server is running. See [`server/README.md`](../server/README.md) for instructions.
+- The data for the client must have been processed via [`server/R/script.prepare_data_and_models.R`](../server/R/script.prepare_data_and_models.R)
+- To use the data explorer, you must have run simulations offline and processed them with the scripts [`server/run_simulations.R`](../server/run_simulations.R) and [`server/process_simulations.R`](../server/process_simulations.R), respectively.
 
 ## Getting Started
 
-First, run the development server:
+First, ensure all packages are installed by executing the following command in `client/` directory:
+
+```bash
+npm install
+```
+
+To run the development server execute the following command in the `client/` directory,
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+
+Alternatively, you can run the production server (which is what is used in production) by executing the following commands in the `client/` directory:
+
+```bash
+npm run build
+npm run start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+There are two pages:
 
-## Learn More
+- `/` is the home page, which contains the simulation runner.
+- `/explorer` is the simulation explorer.
 
-To learn more about Next.js, take a look at the following resources:
+### Simulation Runner
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The simulation runner allows you to run simulations and view the results.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+![Simulation runner](../docs/simulation_runner.png)
+![Results](../docs/results_viewer.png)
 
-## Deploy on Vercel
+### Simulation Explorer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The simulation explorer allows you to view the results of simulations that have been run offline.
+The views are similar to those in the simulation runner, but the explorer allows you to view multiple different
+apparatus assignments of the same team at once.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Code Structure
+
+This project follows the typical hierarchy of a NextJS application utilizing the `app` directory. Pages
+are located in `src/app`, while components, utility functions, and helpers are located in `src/`.
+The project makes use of [React Query](https://tanstack.com/query/latest/) for data fetching and caching.
