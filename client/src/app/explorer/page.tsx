@@ -57,8 +57,8 @@ const fetchData = async (gender: Gender, team: string[]) => {
       sample: number;
       count: number;
     }[];
-    total_samples_per_run: [number];
-    total_runs_with_team: [number];
+    total_samples_per_run: number;
+    total_runs_with_team: number;
   }>('/explore', {
     params: {
       gender_t: gender,
@@ -105,23 +105,6 @@ export default function Explorer() {
       obj[curr.apparatus].push(curr.name);
       return obj;
     }, Object.create(null));
-  const otherSamples = data?.other_samples
-    .filter((v) => {
-      return v.run === activeRun && v.sample === activeSample && v.gender === activeTab;
-    })
-    .reduce((obj, curr) => {
-      if (!obj[curr.apparatus]) {
-        obj[curr.apparatus] = {};
-      }
-
-      if (!obj[curr.apparatus][curr.country]) {
-        obj[curr.apparatus][curr.country] = [];
-      }
-
-      obj[curr.apparatus][curr.country].push(curr.name);
-      return obj;
-    }, Object.create(null));
-
   const teamMedalists = data?.team_medalists.filter((v) => {
     return v.run === activeRun && v.sample === activeSample;
   });
@@ -158,11 +141,11 @@ export default function Explorer() {
       </div>
       <TeamSelectedView selectedTeam={selectedTeam} />
 
-      {!data || data.total_runs_with_team[0] === 0 || data.total_samples_per_run[0] === 0 ? (
+      {!data || data.total_runs_with_team === 0 || data.total_samples_per_run === 0 ? (
         <Center style={{ height: '100%', marginTop: '50px' }}>
           <div>
             <Text fw={500} size="md" mb="md">
-              No Simulations for Selected Team Yet
+              No Simulations for Selected Team
             </Text>
             <Link href="/" passHref>
               <Button
@@ -177,7 +160,7 @@ export default function Explorer() {
         </Center>
       ) : (
         <>
-          {data.total_runs_with_team[0] > 1 && (
+          {data.total_runs_with_team > 1 && (
             <>
               <div
                 style={{
@@ -200,7 +183,7 @@ export default function Explorer() {
                 }}
               >
                 <Pagination
-                  total={data.total_runs_with_team[0]}
+                  total={data.total_runs_with_team}
                   value={activeRun}
                   onChange={setActiveRun}
                 />
@@ -241,7 +224,7 @@ export default function Explorer() {
             }}
           >
             <Pagination
-              total={data.total_samples_per_run[0]}
+              total={data.total_samples_per_run}
               value={activeSample}
               onChange={setActiveSample}
             />
