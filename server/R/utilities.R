@@ -8,11 +8,11 @@
 #   n: Number of top athletes to select from each country (default is 5).
 # Returns:
 #   A dataframe of top `n` athletes from each specified non-USA country.
-get_top_non_usa <- function (dataframe, top_countries, named_competitors, gender_t, n = 5) {
+get_top_non_usa <- function(dataframe, top_countries, named_competitors, gender_t, n = 5) {
   top_five_non_usa <- dataframe %>%
-    filter(gender == gender_t & 
-             country != "USA" & 
-             country %in% top_countries[[gender_t]] & 
+    filter(gender == gender_t &
+             country != "USA" &
+             country %in% top_countries[[gender_t]] &
              !(name %in% named_competitors[[gender_t]])) %>%
     group_by(country, name, apparatus) %>%
     summarize(avg_for_apparatus = mean(predicted_score), .groups = "keep") %>%
@@ -23,7 +23,7 @@ get_top_non_usa <- function (dataframe, top_countries, named_competitors, gender
     slice_head(n = n) %>%
     dplyr::select(name) %>%
     distinct()
-  
+
   return(top_five_non_usa)
 }
 
@@ -50,16 +50,16 @@ get_top_remaining <- function(dataframe, top_countries, named_competitors, gende
     slice_head(n = n) %>%
     dplyr::select(name) %>%
     distinct()
-  
+
   # for each get the country they are from in dataframe
   # add country column to top_n_remaining
-  
+
   top_n_remaining <- top_n_remaining %>%
     left_join(dataframe %>%
                 dplyr::select(name, country),
               by = "name") %>%
     distinct()
-  
+
   return(top_n_remaining)
 }
 
@@ -76,7 +76,7 @@ get_usa_five <- function(dataframe, gender_t) {
     slice_sample(n = 5) %>%
     dplyr::select(name) %>%
     distinct()
-  
+
   return(team_usa)
 }
 
@@ -91,13 +91,13 @@ get_exact_names <- function(dataframe, names) {
     filter(name %in% names) %>%
     dplyr::select(name) %>%
     distinct()
-  
+
   exact_names <- exact_names %>%
     left_join(dataframe %>%
                 dplyr::select(name, country),
               by = "name") %>%
     distinct()
-  
+
   return(exact_names)
 }
 
@@ -132,6 +132,6 @@ order_country <- function(dataframe, country_t, gender_t) {
     arrange(desc(total_score)) %>%
     ungroup() %>%
     dplyr::select(name)
-  
+
   return(sorted_country)
 }

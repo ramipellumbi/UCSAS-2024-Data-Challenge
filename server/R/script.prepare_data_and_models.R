@@ -1,4 +1,4 @@
-# This R script is designed to output the non USA competitors that will be present 
+# This R script is designed to output the non USA competitors that will be present
 # in the 2024 Paris Olympics for men and women.
 
 # The main part of the script involves fitting linear models for each (apparatus, gender) pair,
@@ -29,7 +29,7 @@ make_padded_dataframe <- function(l, ...) {
 df <- prepare_data(get_data())
 top_countries <- read_csv("./raw_data/top_countries.csv",
                           show_col_types = FALSE)
-c3_countries <- read_csv("./raw_data/criteria3.csv", 
+c3_countries <- read_csv("./raw_data/criteria3.csv",
                          show_col_types = FALSE)
 c45_competitors <- read_csv("./raw_data/criteria4_5.csv",
                             show_col_types = FALSE)
@@ -87,12 +87,12 @@ write.csv(women, "server/w.csv", row.names = FALSE)
 write.csv(men, "server/m.csv", row.names = FALSE)
 
 # csv of the team competitors (55 non USA people selected via c12)
-write.csv(w12, 'server/team_w.csv', row.names = FALSE)
-write.csv(m12, 'server/team_m.csv', row.names = FALSE)
+write.csv(w12, "server/team_w.csv", row.names = FALSE)
+write.csv(m12, "server/team_m.csv", row.names = FALSE)
 
-# csv of the 36 alternates 
-write.csv(bind_rows(w3, w45, w67, whu), 'server/alt_w.csv', row.names = FALSE)
-write.csv(bind_rows(m3, m45, m67, mhu), 'server/alt_m.csv', row.names = FALSE)
+# csv of the 36 alternates
+write.csv(bind_rows(w3, w45, w67, whu), "server/alt_w.csv", row.names = FALSE)
+write.csv(bind_rows(m3, m45, m67, mhu), "server/alt_m.csv", row.names = FALSE)
 
 usa_m_all_ordered <- order_country(predictions, "USA", "m")
 usa_w_all_ordered <- order_country(predictions, "USA", "w")
@@ -109,5 +109,9 @@ grouped_names <- df %>%
   dplyr::select(key, names)
 apparatus_names_list <- split(grouped_names$names, grouped_names$key)
 apparatus_names_list <- lapply(apparatus_names_list, function(x) unlist(x))
-apparatus_names_list_json <- jsonlite::toJSON(apparatus_names_list, pretty = TRUE, auto_unbox = TRUE, dataframe = "columns", rownames = FALSE)
+apparatus_names_list_json <- jsonlite::toJSON(apparatus_names_list,
+                                              pretty = TRUE,
+                                              auto_unbox = TRUE,
+                                              dataframe = "columns",
+                                              rownames = FALSE)
 write(apparatus_names_list_json, file = "./client/public/apparatus_names.json")

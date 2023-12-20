@@ -44,7 +44,7 @@ alternates_df_w <- df %>%
             .groups = "keep") %>%
   ungroup()
 
-alternates = list(m = alternates_df_m, w = alternates_df_w)
+alternates <- list(m = alternates_df_m, w = alternates_df_w)
 
 apparatuses_g <- list(m = c("FX", "PH", "SR", "VT", "PB", "HB"),
                       w = c("VT", "UB", "BB", "FX"))

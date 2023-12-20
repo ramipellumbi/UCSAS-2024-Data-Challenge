@@ -8,13 +8,13 @@ library(stringi)
 get_data <- function() {
   data <- read_csv("./raw_data/data_2022_2023.csv",
                    show_col_types = FALSE)
-  
+
   return(data)
 }
 
 prepare_data <- function(data_frame) {
   colnames(data_frame) <- to_snake_case(colnames(data_frame))
-  
+
   # clean column names, some countries, and some names
   prepared_data <- data_frame %>%
     mutate(name = tolower(paste(first_name, last_name, sep = " ")),
@@ -106,17 +106,17 @@ prepare_data <- function(data_frame) {
     mutate(country = ifelse(country %in% c("GE1", "GE2"), "GER", country)) %>%
     # Northern Ireland athletes were all made a part of IRL since they get a choice I made it for them
     mutate(country = ifelse(country == "NIR", "IRL", country)) %>%
-    dplyr::select(name, gender, country, 
-                  date, apparatus, d_score, 
+    dplyr::select(name, gender, country,
+                  date, apparatus, d_score,
                   e_score, penalty, score,
                   round)
-  
+
   # duplicate name cleaning that can be done simply
   dm <- get_duplicate_names_for_gender(prepared_data, "m")
   dm <- dm[-length(dm)]
   dw <- get_duplicate_names_for_gender(prepared_data, "w")
   dw <- dw[-length(dw)]
-  
+
   name_mapping <- unlist(lapply(dw, function(names) {
     first_name <- names[1]
     setNames(rep(first_name, length(names)), names)
@@ -128,7 +128,7 @@ prepare_data <- function(data_frame) {
       return(name)
     }
   })
-  
+
   name_mapping <- unlist(lapply(dm, function(names) {
     first_name <- names[1]
     setNames(rep(first_name, length(names)), names)
@@ -140,14 +140,14 @@ prepare_data <- function(data_frame) {
       return(name)
     }
   })
-  
+
   # get global average on score and d_score for each gender, apparatus, name
-  df_final <- prepared_data %>% 
+  df_final <- prepared_data %>%
     group_by(gender, apparatus, name) %>%
     mutate(all_avg_score = mean(score, na.rm = TRUE),
            all_avg_d_score = mean(d_score, na.rm = TRUE)) %>%
     ungroup()
-  
+
   return(df_final)
 }
 
@@ -157,18 +157,19 @@ find_duplicates <- function(name1_words, idx, split_names) {
   comparisons <- sapply(split_names[(idx + 1):length(split_names)], function(name2_words) {
     all(name1_words %in% name2_words) || all(name2_words %in% name1_words)
   })
-  
+
   # Return indices of matches
   return(which(comparisons) + idx)
 }
 
 get_duplicate_names_for_gender <- function(dataframe, gender_t) {
   potential_duplicates <- list()
-  m_t <- dataframe %>% filter(gender == gender_t) %>% 
-    dplyr::select(name) %>% 
+  m_t <- dataframe %>%
+    filter(gender == gender_t) %>%
+    dplyr::select(name) %>%
     distinct()
   split_names <- strsplit(m_t$name, " ")
-  
+
   for (i in seq_along(split_names)) {
     matches <- find_duplicates(split_names[[i]], i, split_names)
     if (length(matches) > 0) {
@@ -177,6 +178,6 @@ get_duplicate_names_for_gender <- function(dataframe, gender_t) {
       potential_duplicates[[new_i]] <- c(m_t$name[i], matched_names)
     }
   }
-  
+
   return(potential_duplicates)
 }

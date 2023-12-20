@@ -23,7 +23,7 @@ for (file in files) {
   team_usa_5 <- results[[2]]
 
   team_usa <- rbind(team_usa, team_usa_5)
-  
+
   for (name in unique_names) {
     # Extract all data frames with this name
     dfs_to_combine <- lapply(seq_along(sublist), function(i) {
@@ -31,26 +31,26 @@ for (file in files) {
       df
     })
     dfs_to_combine <- dfs_to_combine[!sapply(dfs_to_combine, is.null)]  # Remove null entries
-    
+
     if (name == "apparatus_medalists") {
       # Combine the data frames by row
       apparatus_medalists_t <- do.call(rbind, dfs_to_combine)
       apparatus_medalists <- rbind(apparatus_medalists, apparatus_medalists_t)
     }
-    
+
     if (name == "team_medalists") {
       # Combine the data frames by row
       team_medalists_t <- do.call(rbind, dfs_to_combine)
       team_medalists <- rbind(team_medalists, team_medalists_t)
     }
-    
+
     if (name == "individual_aa_medalists") {
       # Combine the data frames by row
       individual_aa_medalists_t <- do.call(rbind, dfs_to_combine)
       individual_aa_medalists <- rbind(individual_aa_medalists, individual_aa_medalists_t)
     }
   }
-  
+
   modified_usa_samples <- list()
   # Iterate over each element in the sublist
   for (i in seq_along(sublist)) {
@@ -61,13 +61,15 @@ for (file in files) {
   }
   combined_usa_sample <- do.call(rbind, modified_usa_samples)
   usa_samples <- rbind(usa_samples, combined_usa_sample)
-  
+
   modified_other_samples <- list()
   # Iterate over each element in the sublist
   for (i in seq_along(sublist)) {
     # Check if the element is a 'usa_sample' data frame
-    if (length(names(sublist[[i]])) == 6 && "name" %in% names(sublist[[i]]) && "apparatus" %in% names(sublist[[i]]) && "country" %in% names(sublist[[i]])) {
-            modified_other_samples[[i]] <- sublist[[i]]
+    if (length(names(sublist[[i]])) == 6 &&
+          "name" %in% names(sublist[[i]]) &&
+          "apparatus" %in% names(sublist[[i]]) && "country" %in% names(sublist[[i]])) {
+      modified_other_samples[[i]] <- sublist[[i]]
     }
   }
   combined_other_sample <- do.call(rbind, modified_other_samples)
