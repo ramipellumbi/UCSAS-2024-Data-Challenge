@@ -81,18 +81,18 @@ w67 <- get_top_remaining(predictions, top_countries, all_named, "w", n = 14)
 women <- bind_rows(women, w67)
 men <- bind_rows(men, m67)
 
-saveRDS(lm_models, "server/models.RDS")
-saveRDS(df, "server/df.rds")
-write.csv(women, "server/w.csv", row.names = FALSE)
-write.csv(men, "server/m.csv", row.names = FALSE)
+saveRDS(lm_models, "server/processed_data/models.RDS")
+saveRDS(df, "server/processed_data/df.rds")
+write.csv(women, "server/processed_data/w.csv", row.names = FALSE)
+write.csv(men, "server/processed_data/m.csv", row.names = FALSE)
 
 # csv of the team competitors (55 non USA people selected via c12)
-write.csv(w12, "server/team_w.csv", row.names = FALSE)
-write.csv(m12, "server/team_m.csv", row.names = FALSE)
+write.csv(w12, "server/processed_data/team_w.csv", row.names = FALSE)
+write.csv(m12, "server/processed_data/team_m.csv", row.names = FALSE)
 
 # csv of the 36 alternates
-write.csv(bind_rows(w3, w45, w67, whu), "server/alt_w.csv", row.names = FALSE)
-write.csv(bind_rows(m3, m45, m67, mhu), "server/alt_m.csv", row.names = FALSE)
+write.csv(bind_rows(w3, w45, w67, whu), "server/processed_data/alt_w.csv", row.names = FALSE)
+write.csv(bind_rows(m3, m45, m67, mhu), "server/processed_data/alt_m.csv", row.names = FALSE)
 
 usa_m_all_ordered <- order_country(predictions, "USA", "m")
 usa_w_all_ordered <- order_country(predictions, "USA", "w")

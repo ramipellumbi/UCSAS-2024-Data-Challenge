@@ -1,4 +1,4 @@
-# THIS FILE CAN ONLY BE EXECUTED FROM api.R being executed
+# THIS FILE CAN ONLY BE EXECUTED FROM api.R being started
 
 # global data loads
 df <- readRDS("./processed_data/df.rds")
