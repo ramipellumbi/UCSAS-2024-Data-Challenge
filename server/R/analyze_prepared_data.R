@@ -38,7 +38,7 @@ g_r2_m <- r2_df %>%
   ggplot(aes(x = Apparatus, y = R_squared)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   theme_pub(type = "bar") + 
-  labs(title = "R^2 by Apparatus(m)")
+  labs(title = "R^2 by Apparatus(men)")
 ggsave(g_r2_m, file = "plots/m_r2.png", width = 12, height = 4)
 
 g_r2_w <- r2_df %>%
@@ -46,7 +46,7 @@ g_r2_w <- r2_df %>%
   ggplot(aes(x = Apparatus, y = R_squared)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   theme_pub(type = "bar") + 
-  labs(title = "R^2 by Apparatus(w)")
+  labs(title = "R^2 by Apparatus (women)")
 ggsave(g_r2_w, file = "plots/w_r2.png", width = 12, height = 4)
 
 
@@ -62,18 +62,18 @@ apparatuses <- unique(apparatuses)
 for (a in apparatuses) {
   df_g <- df %>%
     filter(gender == gen, apparatus == a) %>%
-    mutate(bin = cut_interval(d_score, length=0.3))
+    mutate(bin = cut(d_score, breaks = c(0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 10)))
   
   g <- df_g %>%
     ggplot(aes(x = e_score)) +
-    geom_histogram(binwidth = 0.5) +
+    geom_histogram(binwidth = 0.2) +
     facet_wrap(~bin, scales = "free_y") + 
     theme_pub(type = "bar") +
     # add title, x label, y label 
-    labs(title = paste0("Execution Score Distribution for ", a, " (", gen, ")"),
+    labs(title = paste0("Execution Score Distribution for ", a, " (", 'women', ")"),
          x = "Execution Score", y = "Count")
   
-  ggsave(g, file = paste0("./plots/", gen, "_", a, ".png"), width = 12, height = 8)
+  ggsave(g, file = paste0("./plots/", gen, "_", a, ".png"))
 }
 
 g_temp <- df %>% 
@@ -83,6 +83,8 @@ g_temp <- df %>%
   geom_point() + 
   geom_smooth(method = "lm", se = FALSE, color = 'steelblue') + 
   theme_pub(type = "scatter") + 
-  labs(title = "FX(m) Execution Score vs Difficulty Score",
-       x = "Difficulty Score", y = "Execution Score")
-ggsave(g_temp, file = "plots/fx_m_d_e.png", width = 12, height = 4)
+  labs(title = "FX (men) Execution Score vs Difficulty Score",
+       x = "Difficulty Score", y = "Execution Score") +
+  xlim(4, 7) +
+  ylim(4, 7)
+ggsave(g_temp, file = "plots/fx_m_d_e.png")
