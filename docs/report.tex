@@ -27,7 +27,7 @@
 \begin{document}
 \maketitle
 \newpage
-\section{Introduction}
+\section{Abstraction}
 In the high-stakes realm of Olympic gymnastics, selecting the optimal team 
 composition is crucial for national success. This study presents a 
 sophisticated system designed to assist Team USA in formulating their Men's 
@@ -41,7 +41,7 @@ This modeling approach leverages data from the USCAS 2024 Gymnastics Data
 Challenge, ensuring robust and relevant insights. Notably, 
 the \texttt{d\_score} is used as a constant feature for an athlete on a given 
 apparatus, allowing for better model performance on the prediction \texttt{e\_score}.
-The performance of these models is acceptable, explaining 
+The performance of these models is commendable, explaining 
 reasonable amounts of the variance for gender-apparatus pairs. Model efficacy is 
 achieved through meticulous data processing and model tuning.
 To translate these insights into actionable strategies, the system 
@@ -91,7 +91,7 @@ discuss the problems in the dataset and how we addressed them.
 
 \subsection{Model Viability}
 To assess the viability of using \texttt{d\_score} as a feature in our model, we
-consider the four assumptions of the linear regression model $Y + X\beta + \epsilon$:
+consider the four assumptions of the linear regression model $Y = X\beta + \epsilon$:
 \begin{enumerate}
     \item Linearity: The relationship between $X$ and the mean of $Y$ is linear.
     \item Independence: Observations are independent of each other.
@@ -105,20 +105,21 @@ Figure \ref{fig:fx_m}. We observe that with the exception of a few outliers, the
 between the mean of \texttt{e\_score} and \texttt{d\_score} is approximately linear.
 \begin{figure}[H]
    \centering 
-   \includegraphics[width=0.8\textwidth]{../plots/fx_m_d_e.png}
-   \caption{Execution Score vs Difficulty Score for FX (m)}
+   \includegraphics[width=0.7\textwidth]{../plots/fx_m_d_e.png}
+   \caption{Execution Score vs Difficulty Score for FX (men)}
    \label{fig:fx_m}
 \end{figure}
 
 \subsubsection{Independence}
 The independence assumption is the easiest to verify. Since the data is collected 
-from different athletes, we can assume that the observations are independent of each other.
+from different athletes, we can assume that the observations of data from different athletes are independent of each other. 
+Observations from the same gymnast are not independent, but the model accounts for this by using the gymnast's name as a feature.
 
 \subsubsection{Homoscedasticity}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{../plots/m_resid_sr.png}
-    \caption{Residuals vs. Fitted for SR (m)}
+    \caption{Residuals vs. Fitted for Still Rings (men)}
     \label{fig:sr_m_resid}
 \end{figure}
 
@@ -134,26 +135,26 @@ the distribution of \texttt{e\_score} does not conform to the normality assumpti
 However, since these values are outliers and infrequent, we proceed with the assumption
 that the distribution of \texttt{e\_score} is normal for a fixed value of \texttt{d\_score}.
 Figures \ref{fig:fx_m_norm} and \ref{fig:ph_m_norm} show the distribution of \texttt{e\_score} 
-for VT (w) and PH (m), respectively.
+for VT (women) and PH (men), respectively.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{../plots//w_VT.png}
-    \caption{Distribution of \texttt{e\_score} for VT (w)}
+    \includegraphics[width=0.6\textwidth]{../plots//w_VT.png}
+    \caption{Distribution of \texttt{e\_score} for VT (women) for different bins of \texttt{d\_score}.}
     \label{fig:fx_m_norm}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{../plots//m_PH.png}
-    \caption{Distribution of \texttt{e\_score} for PH (m)}
+    \includegraphics[width=0.6\textwidth]{../plots//m_PH.png}
+    \caption{Distribution of \texttt{e\_score} for PH (men) for different bins of \texttt{d\_score}}.
     \label{fig:ph_m_norm}
 \end{figure}
 
 \subsection{Date Cleanup}
-The data was found to be malformed in several ways. First, there were many repeat 
+The data was found to be malformed in several ways. First, there were many repeated 
 names in the data with slight variations. That coupled with incorrect country codes 
 and multiple countries associated to the same athlete forced us to clean the data. 
-All duplicate athlete names were removed, and the country codes were corrected. 
+All athlete names were deduplicated, and the country codes were corrected. 
 Athletes with multiple countries were assigned the country with the most occurrences, 
 except for athletes from Northern Ireland, which were forced to be part of NIR rather 
 than GBR. Moreover, the data columns and values were made uniform, e.g., all lowercase 
@@ -188,14 +189,14 @@ have acceptable performance.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{../plots/m_r2.png}
-    \caption{$R^2$ for FX (m)}
+    \caption{$R^2$ for FX (men)}
     \label{fig:m_r2}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{../plots/w_r2.png}
-    \caption{$R^2$ for FX (w)}
+    \caption{$R^2$ for FX (women)}
     \label{fig:w_r2}
 \end{figure}
 \noindent The best model is chosen via the AIC criterion from the \texttt{MASS} package.
@@ -235,7 +236,7 @@ see the repository's server README file.
 
 The server is a Plumber API that is run via RStudio's \texttt{plumber} package. 
 It is responsible for handling requests from the client and returning the appropriate 
-response. In pariticular, the server is able to explore simulations run offline 
+response. In particular, the server is able to explore simulations run offline 
 as well as run new simulations in real time.
 
 \subsubsection{Database}
@@ -296,51 +297,4 @@ The idea was not to provide recommendations, it was to provide a tool to non dat
 their own questions. The user experience is designed to be simple and intuitive, allowing for easy exploration of
 different team compositions and outcomes. The choice of bar charts for the results was intentional, as it allows
 for easy comparison of different teams and individuals across a variety of simulation.
-
-\section{Conclusion}\label{sec:conclusion}
-This report has presented a comprehensive system for optimizing Team USA's 
-gymnastics roster for the Paris 2024 Olympics. The initiative leverages 
-advanced statistical models and simulation techniques to aid in making informed 
-decisions about team composition. In this conclusion, we reflect on the system's 
-key features, its implications, and propose future enhancements.
-
-\
-
-\noindent The core of the system is a set of linear regression models, each tailored 
-to a specific gender-apparatus pair. These models predict athletes' execution 
-scores based on their difficulty scores and names. Our thorough data exploration 
-and cleansing process ensure the integrity and reliability of these models. 
-We have addressed potential issues such as data inconsistencies and athlete 
-name duplications, resulting in a robust dataset. 
-
-\
-
-\noindent The modeling approach, rooted in simplicity and interpretability, is a significant 
-strength of the system. By focusing on linear regression, we facilitate ease of 
-understanding and implementation, crucial for stakeholders such as coaches and decision-makers. 
-Our models perform satisfactorily across different apparatuses and genders, as evidenced by reasonable 
-$R^2$ values, implying a good fit for the data.
-
-\
-
-\noindent The simulation component of the system, which employs Monte Carlo 
-methods, is particularly notable. It allows for the exploration of various team 
-compositions and outcomes, reflecting the complexity and unpredictability of 
-Olympic competitions. This aspect is crucial in a sport where strategic team 
-composition can significantly impact the overall performance and medal prospects.
-
-\
-
-\noindent The system's primary utility lies in its ability to provide a data-driven 
-approach to team selection, a task historically influenced by subjective judgment and experience. 
-By quantifying performance predictions and outcomes, the system empowers coaches and 
-decision-makers with actionable insights by enabling a strategic evaluation of different team compositions.
-
-\
-
-\noindent Moreover, the system's architecture and user interface are designed 
-for accessibility and ease of use. The simulation runner and explorer facilitate 
-interactive exploration of potential outcomes, a feature that is particularly valuable 
-for strategic planning and scenario analysis.
-
 \end{document}
